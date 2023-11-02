@@ -14,7 +14,8 @@ public class DriverOperator extends OpMode {
     DcMotor frontRight = null;
     DcMotor backLeft = null;
     DcMotor backRight = null;
-    double drivePower = 4.0;
+    //double drivePower = 4.0;
+    double drivePower = 2.0;
 
     @Override
     public void init() {
@@ -33,9 +34,13 @@ public class DriverOperator extends OpMode {
     @Override
     public void loop() {
 
-        double y = gamepad1.left_stick_y;
-        double x = gamepad1.left_stick_x * -1; //-1.1;
-        double rx = -gamepad1.right_stick_x;
+        /*double y = gamepad1.left_stick_y;
+        double x = gamepad1.left_stick_x * -1.1; //-1.1;
+        double rx = -gamepad1.right_stick_x;*/
+        double y = -gamepad1.left_stick_y; // Remember, this is reversed!
+        double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
+        double rx = gamepad1.right_stick_x;
+
         telemetry.addLine("x:" + x+ "y:"+y + "rx:"+rx);
 
         double denominator = Math.max(Math.abs(y) + Math.abs(x)+ Math.abs(rx), drivePower);
