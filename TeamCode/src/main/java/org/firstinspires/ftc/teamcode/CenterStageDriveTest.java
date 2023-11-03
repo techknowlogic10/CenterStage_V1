@@ -91,7 +91,7 @@ public class CenterStageDriveTest extends OpMode {
 
         Slider = hardwareMap.dcMotor.get("slider");
         //Slider.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        Slider.setDirection(DcMotorSimple.Direction.REVERSE);
+        //Slider.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //TestMotor = hardwareMap.dcMotor.get("testmotor");
        // frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -238,7 +238,7 @@ public class CenterStageDriveTest extends OpMode {
             ElevatorLock.setPosition(ElevatorLockPower);
 
         } else  if (gamepad2.right_bumper){
-            ElevatorLockPower = 0;
+            ElevatorLockPower = 0.5;
             ElevatorLock.setPosition(ElevatorLockPower);
         }
 
