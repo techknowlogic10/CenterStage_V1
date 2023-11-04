@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.SignalDetector;
 @Autonomous
 //@Disabled
 @Config
+@Disabled
 public class SignalDetectorTest extends LinearOpMode {
 
     @Override

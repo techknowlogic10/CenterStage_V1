@@ -40,9 +40,13 @@ public class TeamShippingElementDetector {
     Mat inputInYCRCB = new Mat();
     Mat inputInCB = new Mat();
 
+    public static RobotPosition LOCAL_ROBOT_POSITION = null;
+
     public TeamShippingElementDetector(HardwareMap hardwareMap, Telemetry telemetry, RobotPosition robotPosition, boolean monitorViewNeeded) {
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
+
+        this.LOCAL_ROBOT_POSITION = robotPosition;
 
         ScannerCoordinates coordinates = new ScannerCoordinates(robotPosition);
 
@@ -96,6 +100,7 @@ public class TeamShippingElementDetector {
             Imgproc.rectangle(frame, rightRectanglePoint1, rightRectanglePoint2, new Scalar(0, 255, 0), 2);
 
             Imgproc.cvtColor(frame, inputInYCRCB, Imgproc.COLOR_RGB2YCrCb);
+
             Core.extractChannel(inputInYCRCB, inputInCB, 1);
 
             Mat leftRectangleFrame = frame.submat(new Rect(leftRectanglePoint1, leftRectanglePoint2));
@@ -108,21 +113,81 @@ public class TeamShippingElementDetector {
             telemetry.log().add("rightRectangleMean is " + rightRectangleMean);
 
             if (allianceColor == "Red"){
-                if (leftRectangleMean < 130) {
+                /*//if (leftRectangleMean < 130) {
+                if (leftRectangleMean > 130) {
                     elementPosition = "LEFT";
-                } else if (rightRectangleMean < 105) {
+                //} else if (rightRectangleMean < 105) {
+                } else if (rightRectangleMean > 180) {
                     elementPosition = "CENTER";
                 } else {
                     elementPosition = "RIGHT";
+                }*/
+
+                if(LOCAL_ROBOT_POSITION == RobotPosition.RED_CAROUSAL) {
+
+                    int max = Math.max(leftRectangleMean, rightRectangleMean);
+                    if (max == leftRectangleMean && leftRectangleMean < 130 && leftRectangleMean > 100) {
+                        elementPosition = "LEFT";
+                    } else if (max == rightRectangleMean && rightRectangleMean >= 130) {
+                        elementPosition = "CENTER";
+                    } else {
+                        elementPosition = "RIGHT";
+                    }
+
+                } else if(LOCAL_ROBOT_POSITION == RobotPosition.RED_WAREHOUSE) {
+
+                    int max = Math.max(leftRectangleMean, rightRectangleMean);
+                    if (max == leftRectangleMean && leftRectangleMean < 130 && leftRectangleMean > 100) {
+                        elementPosition = "LEFT";
+                    } else if (max == rightRectangleMean && rightRectangleMean >= 130) {
+                        elementPosition = "CENTER";
+                    } else {
+                        elementPosition = "RIGHT";
+                    }
+
                 }
+
+                /*//if (leftRectangleMean < 130) {
+                if (leftRectangleMean > 130) {
+                    elementPosition = "LEFT";
+                //} else if (rightRectangleMean < 105) {
+                } else if (rightRectangleMean > 180) {
+                    elementPosition = "CENTER";
+                } else {
+                    elementPosition = "RIGHT";
+                }*/
+
             }
             else {
-                if (leftRectangleMean > 120) {
+                /*if (leftRectangleMean > 120) {
                     elementPosition = "LEFT";
                 } else if (rightRectangleMean > 120) {
                     elementPosition = "CENTER";
                 } else {
                     elementPosition = "RIGHT";
+                }*/
+                if(LOCAL_ROBOT_POSITION == RobotPosition.BLUE_CAROUSAL) {
+
+                    int max = Math.max(leftRectangleMean, rightRectangleMean);
+                    if (max == leftRectangleMean && leftRectangleMean < 130 && leftRectangleMean > 100) {
+                        elementPosition = "LEFT";
+                    } else if (max == rightRectangleMean && rightRectangleMean >= 130) {
+                        elementPosition = "CENTER";
+                    } else {
+                        elementPosition = "RIGHT";
+                    }
+
+                } else if(LOCAL_ROBOT_POSITION == RobotPosition.BLUE_WAREHOUSE) {
+
+                    int max = Math.max(leftRectangleMean, rightRectangleMean);
+                    if (max == leftRectangleMean && leftRectangleMean < 130 && leftRectangleMean > 100) {
+                        elementPosition = "LEFT";
+                    } else if (max == rightRectangleMean && rightRectangleMean >= 130) {
+                        elementPosition = "CENTER";
+                    } else {
+                        elementPosition = "RIGHT";
+                    }
+
                 }
             }
 

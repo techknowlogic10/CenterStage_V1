@@ -62,6 +62,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @Autonomous(name="Robot: Auto Drive By Encoder", group="Robot")
+@Disabled
 public class RobotAutoDriveByEncoderTest extends LinearOpMode {
 
     /* Declare OpMode members. */

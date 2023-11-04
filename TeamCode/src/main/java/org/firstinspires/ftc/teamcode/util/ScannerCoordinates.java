@@ -11,22 +11,27 @@ import org.openftc.easyopencv.OpenCvWebcam;
 public class ScannerCoordinates {
 
     //WebcamR
-    public static Point RED_CAROUSAL_LEFT_RECTANGLE_POINT1 = new Point(15, 50);
-    public static Point RED_CAROUSAL_RIGHT_RECTANGLE_POINT1 = new Point(180, 0);
+    //public static Point RED_CAROUSAL_LEFT_RECTANGLE_POINT1 = new Point(15, 50);
+    public static Point RED_CAROUSAL_LEFT_RECTANGLE_POINT1 = new Point(15, 15);
+    //public static Point RED_CAROUSAL_RIGHT_RECTANGLE_POINT1 = new Point(180, 0);
+    public static Point RED_CAROUSAL_RIGHT_RECTANGLE_POINT1 = new Point(170, 30);
 
     //WebcamL
-    public static Point RED_WAREHOUSE_LEFT_RECTANGLE_POINT1 = new Point(70, 100);
-    public static Point RED_WAREHOUSE_RIGHT_RECTANGLE_POINT1 = new Point(225, 0);
+    public static Point RED_WAREHOUSE_LEFT_RECTANGLE_POINT1 = new Point(15, 50);
+   // public static Point RED_WAREHOUSE_RIGHT_RECTANGLE_POINT1 = new Point(225, 0);
+   public static Point RED_WAREHOUSE_RIGHT_RECTANGLE_POINT1 = new Point(170, 30);
 
     //WebcamL
-    public static Point BLUE_CAROUSAL_LEFT_RECTANGLE_POINT1 = new Point(65, 0);
-    public static Point BLUE_CAROUSAL_RIGHT_RECTANGLE_POINT1 = new Point(225, 0);
+    //public static Point BLUE_CAROUSAL_LEFT_RECTANGLE_POINT1 = new Point(65, 0);
+    public static Point BLUE_CAROUSAL_LEFT_RECTANGLE_POINT1 = new Point(15, 15);
+    //public static Point BLUE_CAROUSAL_RIGHT_RECTANGLE_POINT1 = new Point(225, 0);
+    public static Point BLUE_CAROUSAL_RIGHT_RECTANGLE_POINT1 = new Point(170, 0);
 
     //WebcamR
     public static Point BLUE_WAREHOUSE_LEFT_RECTANGLE_POINT1 = new Point(0, 60);
     public static Point BLUE_WAREHOUSE_RIGHT_RECTANGLE_POINT1 = new Point(160, 60);
 
-    public static String LEFT_CAMERA_NAME = "WebcamL";
+    public static String LEFT_CAMERA_NAME = "Webcam1";
     public static String RIGHT_CAMERA_NAME = "Webcam1" +
             "";
 
@@ -40,10 +45,11 @@ public class ScannerCoordinates {
     private Point leftRectanglePoint2;
     private Point rightRectanglePoint2;
 
-    private double boxHeightMiddle = 60;
+    private double boxHeightMiddle = 38;
     private double boxWidthMiddle = 30;
-    private double boxWidthLeft= 60;
-    private double boxHeightLeft = 30;
+    //private double boxWidthLeft= 60;
+    private double boxWidthLeft= 30;
+    private double boxHeightLeft = 50;
 
     public ScannerCoordinates(RobotPosition robotPosition) {
 
