@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.trajectory.SimpleTrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.acmerobotics.dashboard.config.Config;
@@ -12,6 +13,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.RobotPosition;
 import org.firstinspires.ftc.teamcode.util.TeamShippingElementDetector;
+import org.firstinspires.ftc.teamcode.util.TeamPropDetector;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -23,7 +26,122 @@ import org.openftc.easyopencv.OpenCvWebcam;
 @Config
 public class RedRight extends LinearOpMode {
 
+    public static Pose2d STARTING_POSITION = new Pose2d(37,-60, Math.toRadians(90));
+    public static RobotPosition ROBOT_POSITION = RobotPosition.RED_CAROUSAL;
+
+    @Override
+    public void runOpMode() throws InterruptedException {
+
+        //Servo Grabber = hardwareMap.get(Servo.class, "grabber");
+        //Servo Grabber = hardwareMap.get(Servo.class, "purpledrop");
+
+      /*  Grabber.scaleRange(0, 1);
+        Grabber.setPosition(0.8); */
+
+       /* TeamShippingElementDetector detector = new TeamShippingElementDetector(hardwareMap, telemetry, ROBOT_POSITION, true);
+        //Detection continue to happen throughout init
+        detector.startDetection();
+        */
+
+        while (opModeInInit()) {
+            telemetry.addLine("gggg");
+            //telemetry.addLine("Parking position is " + detector.getElementPosition());
+            telemetry.update();
+        }
+
+       /* TeamPropDetector teamPropDetector = new TeamPropDetector(hardwareMap, telemetry);
+        teamPropDetector.startDetection();
+        while (opModeInInit()) {
+            telemetry.addLine("TeamPropPosition: " + teamPropDetector.getTeamPropPosition());
+            telemetry.update();
+        } */
+
+        SampleMecanumDrive drivetrain = new SampleMecanumDrive(hardwareMap);
+        //drivetrain.setPoseEstimate(STARTING_POSITION);
+
+
+
+        //String shippingElementPosition = detector.getElementPosition();
+        String shippingElementPosition = "";
+        //String shippingElementPosition = teamPropDetector.getTeamPropPosition();
+        //telemetry.log().add("team shipping element position " + shippingElementPosition);
+        shippingElementPosition = "CENTER";
+
+        //teamPropDetector.startDetection();
+
+        telemetry.addLine("BEFORE shippingElementPosition");
+
+        TrajectorySequence trajSeq = null;
+
+        if(shippingElementPosition == "CENTER") {
+
+            telemetry.addLine("INSIDE IF CENTER");
+
+             trajSeq = drivetrain.trajectorySequenceBuilder(STARTING_POSITION)
+                    .forward(20)
+                   // .addTemporalMarker(() -> Grabber.setPosition(0.2)) // Lower servo
+                    //.waitSeconds(3)
+                    .turn(Math.toRadians(90) + 1e-6) //clockwise
+                    .forward(21)
+                    .strafeRight(34)
+                    .forward(10)
+                    .build();
+
+
+
+
+           // drivetrain.turn(Math.toRadians(-150));
+            // Turns counter clockwise
+            //drive.turn(Math.toRadians(180) + 1e-6);
+            // Turns clockwise
+            //drive.tu
+            // rn(Math.toRadians(180) - 1e-6);
+
+        } else if(shippingElementPosition == "LEFT") {
+
+            telemetry.addLine("INSIDE ELSE IF LEFT");
+
+             trajSeq = drivetrain.trajectorySequenceBuilder(STARTING_POSITION)
+                    .forward(20)
+                   // .addTemporalMarker(() -> Grabber.setPosition(0.2)) // drop pixel
+                    .waitSeconds(3)
+                    .turn(Math.toRadians(90) + 1e-6)
+                    .forward(21)
+                    .strafeRight(34)
+                    .forward(10)
+                    .build();
+
+
+        } else {  //RIGHT
+            telemetry.addLine("INSIDE ELSE RIGHT");
+
+             trajSeq = drivetrain.trajectorySequenceBuilder(STARTING_POSITION)
+                    .forward(20)
+                    //.addTemporalMarker(() -> Grabber.setPosition(0.2)) // drop pixel
+                    .waitSeconds(3)
+                    .turn(Math.toRadians(90) + 1e-6)
+                    .forward(21)
+                    .strafeRight(34)
+                    .forward(10)
+                    .build();
+
+        }
+
+        // Wait for the DS start button to be touched.
+        telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
+        telemetry.addData(">", "Touch Play to start Autonomous");
+        telemetry.update();
+        waitForStart();
+
+        drivetrain.followTrajectorySequence(trajSeq);
+
+
+    }
+
+    /*
+
     private static final boolean USE_WEBCAM = true;
+
     //private int spikeMarkPixelPosition = 1;
 
     public static Pose2d STARTING_POSITION = new Pose2d(37,-60, Math.toRadians(90));
@@ -87,12 +205,6 @@ public class RedRight extends LinearOpMode {
 
         SampleMecanumDrive drivetrain = new SampleMecanumDrive(hardwareMap);
         drivetrain.setPoseEstimate(STARTING_POSITION);
-
-        /*DcMotor Slider = hardwareMap.dcMotor.get("slider");
-        //Slider.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        Slider.setDirection(DcMotorSimple.Direction.REVERSE);*/
-
-
 
         Trajectory step1_forward = null;
         Trajectory step2_forward = null;
@@ -187,23 +299,9 @@ public class RedRight extends LinearOpMode {
 
     }
 
-   /* private void parkRobot(int parkingPosition, SampleMecanumDrive drivetrain) {
+     */
 
-        Trajectory park_strafe = null;
 
-        if (parkingPosition == 1) {
-            park_strafe = drivetrain.trajectoryBuilder(drivetrain.getPoseEstimate()).strafeLeft(PARKING_ONE_STRAFE_LEFT).build();
-        } else if (parkingPosition == 2) {
-            park_strafe = drivetrain.trajectoryBuilder(drivetrain.getPoseEstimate()).strafeLeft(PARKING_TWO_STRAFE_LEFT).build();
-        } else {
-            park_strafe = drivetrain.trajectoryBuilder(drivetrain.getPoseEstimate()).strafeRight(PARKING_THREE_STRAFE_RIGHT).build();
-        }
-
-        drivetrain.followTrajectory(park_strafe);
-
-        Trajectory parkingBack = drivetrain.trajectoryBuilder(drivetrain.getPoseEstimate()).back(PARKING_BACK).build();
-        drivetrain.followTrajectory(parkingBack);
-    }*/
 
 
 }
