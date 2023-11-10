@@ -30,7 +30,7 @@ public class DriverOperator extends OpMode {
 
     double DronePos = 0;
     double ElbowPos = 0.9 ;
-    double GrabberPos = 0.8;
+    double GrabberPos = 0;
     double ElevatorLockPos = 0.5;
     double PurpleDropPos = 0.9;
     double WristPos = 0;
@@ -71,12 +71,9 @@ public class DriverOperator extends OpMode {
         Wrist.setPosition(WristPos);
 
         Grabber = hardwareMap.get(Servo.class, "grabber");
-        Grabber.scaleRange(0.5, 1);
+        Grabber.scaleRange(0, 1);
         Grabber.setPosition(GrabberPos);
 
-        /*PurpleDrop = hardwareMap.get(Servo.class, "purpledrop");
-        //Grabber.scaleRange(0.2, 0.8);
-        Grabber.setPosition(PurpleDropPos);*/
 
         Slider = hardwareMap.dcMotor.get("slider");
         Slider.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -133,11 +130,6 @@ public class DriverOperator extends OpMode {
         telemetry.addLine("sliderspeed before settong slider power: "+ sliderspeed);
         Slider.setPower(sliderspeed);
 
-        DronePos = 0;
-        GrabberPos =0.01;
-        ElbowPos = 1;
-
-
 
         //Elbow up and down
         telemetry.addLine("before Elbow");
@@ -154,25 +146,24 @@ public class DriverOperator extends OpMode {
         //Wrist up and down   --Driver
         telemetry.addLine("before Wrist");
         if (gamepad1.dpad_up){
-            WristPos = 0.9;
+            WristPos = 0;
             Wrist.setPosition(WristPos);
 
         } else  if (gamepad1.dpad_down){
-            WristPos = 1;
+            WristPos = 0.5;
             Wrist.setPosition(WristPos);
         }
 
         //grabber in take and open
         telemetry.addLine("before grabber");
         if (gamepad2.right_bumper){
-            GrabberPos = 0.01;
+            GrabberPos = 0.2;
             telemetry.addLine("if rb grabber GrabberPos:" + GrabberPos);
             Grabber.setPosition(GrabberPos);
 
         } else if (gamepad2.left_bumper){
 
-            GrabberPos = 0.2
-            ;
+            GrabberPos = 0;
             telemetry.addLine(" else lb grabber GrabberPos:" + GrabberPos);
             Grabber.setPosition(GrabberPos);
         }

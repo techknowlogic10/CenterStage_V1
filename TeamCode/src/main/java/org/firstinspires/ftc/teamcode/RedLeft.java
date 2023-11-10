@@ -34,7 +34,7 @@ public class RedLeft extends LinearOpMode {
 
     //public static Pose2d STARTING_POSITION = new Pose2d(37,-60, Math.toRadians(90));
     public static Pose2d STARTING_POSITION = new Pose2d(0, 0, 0);
-    public static RobotPosition ROBOT_POSITION = RobotPosition.BLUE_WAREHOUSE;
+    public static RobotPosition ROBOT_POSITION = RobotPosition.RED_WAREHOUSE;
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
@@ -66,11 +66,7 @@ public class RedLeft extends LinearOpMode {
         detector.startDetection();
         */
 
-       /* while (opModeInInit()) {
-            telemetry.addLine("gggg");
-            //telemetry.addLine("Parking position is " + detector.getElementPosition());
-            telemetry.update();
-        }*/
+
 
         telemetry.addLine("before initTfod");
         initTfod();
@@ -95,12 +91,6 @@ public class RedLeft extends LinearOpMode {
             // Push telemetry to the Driver Station.
             telemetry.update();
 
-               /* // Save CPU resources; can resume streaming when needed.
-                if (gamepad1.dpad_down) {
-                    visionPortal.stopStreaming();
-                } else if (gamepad1.dpad_up) {
-                    visionPortal.resumeStreaming();
-                }*/
 
             // Share the CPU.
             sleep(20);
@@ -121,32 +111,6 @@ public class RedLeft extends LinearOpMode {
         visionPortal.close();
 
 
-
-       /* while (shippingElementPosition.equals("NOTFOUND") && opModeIsActive()) {
-
-            telemetry.addLine("while opModeIsActive");
-            telemetry.addLine("startDetection- teampropposition: " + teamPropDetector.startDetection());
-            shippingElementPosition = teamPropDetector.startDetection();
-
-        }*/
-        //teamPropDetector.startDetection();
-       /* while (opModeInInit()) {
-            telemetry.addLine("startDetection- teampropposition: " + teamPropDetector.startDetection());
-            telemetry.update();
-        }*/
-
-
-
-
-
-        //String shippingElementPosition = detector.getElementPosition();
-
-        //telemetry.log().add("team shipping element position " + shippingElementPosition);
-        // String shippingElementPosition = "CENTER";
-
-        //teamPropDetector.startDetection();
-
-
         SampleMecanumDrive drivetrain = new SampleMecanumDrive(hardwareMap);
 
         TrajectorySequence trajSeq = null;
@@ -160,42 +124,39 @@ public class RedLeft extends LinearOpMode {
                     .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
                     .waitSeconds(3)
                     .back(8)
-                    .turn(Math.toRadians(150)) //clockwise
-                    .forward(35)
+                    .strafeLeft(20)
+                    .forward(20)
+                    .turn(Math.toRadians(-150)) //clockwise
+                    .forward(100)
+                    .strafeRight(20)
                     // .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
                     //.waitSeconds(3)
-                    .strafeLeft(45)
-                    .forward(12)
+                    .strafeLeft(20)
+                    .forward(10)
                     .build();
 
-            // drivetrain.turn(Math.toRadians(-150));
-            // Turns counter clockwise
-            //drive.turn(Math.toRadians(180) + 1e-6);
-            // Turns clockwise
-            //drive.tu
-            // rn(Math.toRadians(180) - 1e-6);
+
 
         } else if(shippingElementPosition == "LEFT") {
 
             telemetry.addLine("INSIDE ELSE IF LEFT");
 
-
-
             trajSeq = drivetrain.trajectorySequenceBuilder(STARTING_POSITION)
-                    .strafeLeft(27)
+                    .strafeLeft(10)
                     .forward(20)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
                     .waitSeconds(3)
                     .back(8)
+                    .strafeRight(8)
+                    .forward(30)
                     .turn(Math.toRadians(150)) //clockwise
-                    .forward(20)
+                    .forward(80)
+                    .strafeRight(20)
                     // .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
                     //.waitSeconds(3)
-                    .strafeLeft(40)
-                    .forward(15)
+                    .strafeLeft(20)
+                    .forward(10)
                     .build();
-
-
 
         } else {  //RIGHT
             telemetry.addLine("INSIDE ELSE RIGHT");
@@ -207,53 +168,22 @@ public class RedLeft extends LinearOpMode {
                     .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
                     .waitSeconds(3)
                     .back(8)
-                    .turn(Math.toRadians(150)) //clockwise
-                    .waitSeconds(2)
-                    .turn(Math.toRadians(150)) //clockwise
-                    .forward(35)
+                    .strafeLeft(20)
+                    .forward(80)
+                    .strafeRight(20)
                     // .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
                     //.waitSeconds(3)
-                    .strafeLeft(45)
-                    .forward(12)
+                    .strafeLeft(20)
+                    .forward(10)
                     .build();
 
 
         }
 
-
-
-
         drivetrain.followTrajectorySequence(trajSeq);
-
-
 
     }
 
-    /*
-
-    private static final boolean USE_WEBCAM = true;
-
-    //private int spikeMarkPixelPosition = 1;
-
-    public static Pose2d STARTING_POSITION = new Pose2d(37,-60, Math.toRadians(90));
-
-    @Override
-    public void runOpMode() throws InterruptedException {
-
-        Servo Grabber = hardwareMap.get(Servo.class, "grabber");
-        Grabber.scaleRange(0, 1);
-        Grabber.setPosition(0.8);
-
-        TeamShippingElementDetector detector = new TeamShippingElementDetector(hardwareMap, telemetry, ROBOT_POSITION, true);
-        //Detection continue to happen throughout init
-        detector.startDetection();
-
-        while (opModeInInit()) {
-            telemetry.addLine("Parking position is " + detector.getElementPosition());
-            telemetry.update();
-        }
-
-     */
 
 
     private void initTfod() {
