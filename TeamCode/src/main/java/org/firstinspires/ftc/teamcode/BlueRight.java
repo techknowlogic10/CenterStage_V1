@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.trajectory.SimpleTrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.acmerobotics.dashboard.config.Config;
@@ -9,77 +10,232 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.RobotPosition;
 import org.firstinspires.ftc.teamcode.util.TeamShippingElementDetector;
+import org.firstinspires.ftc.teamcode.util.TeamPropDetector;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
+import java.util.List;
+
 @Autonomous(name = "Blue Right")
 @Config
 public class BlueRight extends LinearOpMode {
 
+    //public static Pose2d STARTING_POSITION = new Pose2d(37,-60, Math.toRadians(90));
+    public static Pose2d STARTING_POSITION = new Pose2d(0, 0, 0);
+    public static RobotPosition ROBOT_POSITION = RobotPosition.BLUE_WAREHOUSE;
+
+    private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
+
+
+    private TfodProcessor tfod;
+    private VisionPortal visionPortal;
+    //private static final String TFOD_MODEL_FILE = "testmodel.tflite";
+    //private static final String TFOD_MODEL_FILE = "CenterStage.tflite";
+    private static final String TFOD_MODEL_FILE = "TechKNOWLogic_Centerstage.tflite";
+    //private static final String[] LABELS = { "testmodel", };
+    private static final String[] LABELS = { "blueprop","redprop"};
+    //private static final String[] LABELS = { "Pixel",};
+
+
+
+    @Override
+    public void runOpMode() throws InterruptedException {
+
+        //Servo Grabber = hardwareMap.get(Servo.class, "grabber");
+        Servo PurpleDrop = hardwareMap.get(Servo.class, "purpledrop");
+        //PurpleDrop.scaleRange(0.01, 0.4);
+        //PurpleDrop.setPosition(0.4);
+
+      /*Grabber.scaleRange(0, 1);
+        Grabber.setPosition(0.8); */
+
+       /* TeamShippingElementDetector detector = new TeamShippingElementDetector(hardwareMap, telemetry, ROBOT_POSITION, true);
+        //Detection continue to happen throughout init
+        detector.startDetection();
+        */
+
+       /* while (opModeInInit()) {
+            telemetry.addLine("gggg");
+            //telemetry.addLine("Parking position is " + detector.getElementPosition());
+            telemetry.update();
+        }*/
+
+        telemetry.addLine("before initTfod");
+        initTfod();
+        telemetry.addLine("after initTfod");
+        String shippingElementPosition = "NOTFOUND";
+
+
+
+
+        // TeamPropDetector teamPropDetector = new TeamPropDetector(hardwareMap, telemetry);
+        //  String shippingElementPosition = "NOTFOUND";
+
+
+        while (opModeInInit() && shippingElementPosition == "NOTFOUND"  ) {
+
+            telemetry.addLine("while opModeIsActive");
+
+            //telemetryTfod();
+            shippingElementPosition = startDetection();
+
+
+            // Push telemetry to the Driver Station.
+            telemetry.update();
+
+               /* // Save CPU resources; can resume streaming when needed.
+                if (gamepad1.dpad_down) {
+                    visionPortal.stopStreaming();
+                } else if (gamepad1.dpad_up) {
+                    visionPortal.resumeStreaming();
+                }*/
+
+            // Share the CPU.
+            sleep(20);
+        }
+
+
+        telemetry.addLine("BEFORE shippingElementPosition:" +shippingElementPosition);
+        // Save more CPU resources when camera is no longer needed.
+
+
+        // Wait for the DS start button to be touched.
+        telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
+        telemetry.addData(">", "Touch Play to start Autonomous");
+        telemetry.update();
+        waitForStart();
+
+        //visionPortal.stopStreaming();
+        visionPortal.close();
+
+
+
+       /* while (shippingElementPosition.equals("NOTFOUND") && opModeIsActive()) {
+
+            telemetry.addLine("while opModeIsActive");
+            telemetry.addLine("startDetection- teampropposition: " + teamPropDetector.startDetection());
+            shippingElementPosition = teamPropDetector.startDetection();
+
+        }*/
+        //teamPropDetector.startDetection();
+       /* while (opModeInInit()) {
+            telemetry.addLine("startDetection- teampropposition: " + teamPropDetector.startDetection());
+            telemetry.update();
+        }*/
+
+
+
+
+
+        //String shippingElementPosition = detector.getElementPosition();
+
+        //telemetry.log().add("team shipping element position " + shippingElementPosition);
+        // String shippingElementPosition = "CENTER";
+
+        //teamPropDetector.startDetection();
+
+
+        SampleMecanumDrive drivetrain = new SampleMecanumDrive(hardwareMap);
+
+        TrajectorySequence trajSeq = null;
+
+        if(shippingElementPosition == "CENTER") {
+
+            telemetry.addLine("INSIDE IF CENTER");
+
+            trajSeq = drivetrain.trajectorySequenceBuilder(STARTING_POSITION)
+                    .forward(30)
+                    .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
+                    .waitSeconds(3)
+                    .back(8)
+                    .turn(Math.toRadians(150)) //clockwise
+                    .forward(35)
+                    // .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
+                    //.waitSeconds(3)
+                    .strafeLeft(45)
+                    .forward(12)
+                    .build();
+
+            // drivetrain.turn(Math.toRadians(-150));
+            // Turns counter clockwise
+            //drive.turn(Math.toRadians(180) + 1e-6);
+            // Turns clockwise
+            //drive.tu
+            // rn(Math.toRadians(180) - 1e-6);
+
+        } else if(shippingElementPosition == "LEFT") {
+
+            telemetry.addLine("INSIDE ELSE IF LEFT");
+
+
+
+            trajSeq = drivetrain.trajectorySequenceBuilder(STARTING_POSITION)
+                    .strafeLeft(27)
+                    .forward(20)
+                    .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
+                    .waitSeconds(3)
+                    .back(8)
+                    .turn(Math.toRadians(150)) //clockwise
+                    .forward(20)
+                    // .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
+                    //.waitSeconds(3)
+                    .strafeLeft(40)
+                    .forward(15)
+                    .build();
+
+
+
+        } else {  //RIGHT
+            telemetry.addLine("INSIDE ELSE RIGHT");
+
+            trajSeq = drivetrain.trajectorySequenceBuilder(STARTING_POSITION)
+                    .forward(28)
+                    .turn(Math.toRadians(-150)) //clockwise
+                    .forward(8)
+                    .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
+                    .waitSeconds(3)
+                    .back(8)
+                    .turn(Math.toRadians(150)) //clockwise
+                    .waitSeconds(2)
+                    .turn(Math.toRadians(150)) //clockwise
+                    .forward(35)
+                    // .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
+                    //.waitSeconds(3)
+                    .strafeLeft(45)
+                    .forward(12)
+                    .build();
+
+
+        }
+
+
+
+
+        drivetrain.followTrajectorySequence(trajSeq);
+
+
+
+    }
+
+    /*
+
     private static final boolean USE_WEBCAM = true;
-    private int spikeMarkPixelPosition = 1;
+
+    //private int spikeMarkPixelPosition = 1;
 
     public static Pose2d STARTING_POSITION = new Pose2d(37,-60, Math.toRadians(90));
-
-    //Measurements for the CENTER TeamProp
-    public static int STEP1_CENTER_FORWARD = 18;
-    public static int STEP2_CENTER_BACKWARD = 16;
-    public static int STEP3_CENTER_RIGHT_FORWARD = 60;
-    public static int STEP4_CENTER_RIGHT_STRAF = 30;
-    public static int STEP4_CENTER_RIGHT_STRAF_2 = 30;
-    public static int STEP4_CENTER_PARK = 10;
-    public static int STEP4_CENTER_LEFT_STRAF = 20;
-    public static int STEP5_CENTER_FORWARD_BACKDROP = 10;
-    public static int STEP6_CENTER_BACKDROP_RIGHT_STRAF = 20;
-    public static int STEP7_CENTER_PARK_FORWARD = 10;
-
-    //Measurements for the LEFT TeamProp
-    public static int STEP1_LEFT_STRAF = 20;
-    public static int STEP2_LEFT_FORWARD = 12;
-    public static int STEP3_LEFT_BACKWARD = 10;
-    public static int STEP3_LEFT_RIGHT_FORWARD = 70;
-    public static int STEP5_LEFT_LEFT_STRAF = 20;
-    public static int STEP5_LEFT_FORWARD_BACKDROP = 10;
-    public static int STEP6_LEFT_BACKDROP_RIGHT_STRAF = 20;
-    public static int STEP7_LEFT_PARK_FORWARD = 10;
-
-
-    //Measurements for the RIGHT TeamProp
-    public static int STEP1_RIGHT_FORWARD = 18;
-    public static int STEP2_RIGHT_PIXELMARK_FORWARD = 5;
-    public static int STEP3_RIGHT_RIGHT_STRAF = 16;
-    public static int STEP3_RIGHT_RIGHT_FORWARD = 60;
-    public static int STEP5_RIGHT_LEFT_STRAF = 20;
-    public static int STEP5_RIGHT_FORWARD_BACKDROP = 10;
-    public static int STEP6_RIGHT_BACKDROP_RIGHT_STRAF = 20;
-    public static int STEP7_RIGHT_PARK_FORWARD = 10;
-
-    //public static int STEP2_FORWARD = 10;
-    //public static int STEP2_RIGHT_FORWARD = 26;
-
-    public static int STEP1_RIGHT_STRAFE_RIGHT = 10;
-    //public static int STEP1_RIGHT_FORWARD = 10;
-
-    //public static int STEP1_STRAFE_RIGHT = 33;
-    //public static int STEP2_FORWARD = 42;
-    public static int STEP3_STRAFE_LEFT = 5;
-    public static int STEP4_STRAFE_RIGHT = 2;
-    public static int STEP5_FORWARD = 8;
-
-    public static int PARKING_ONE_STRAFE_LEFT = 52;
-    public static int PARKING_TWO_STRAFE_LEFT = 25;
-    public static int PARKING_THREE_STRAFE_RIGHT = 2;
-
-    public static int PARKING_BACK = 12;
-
-    public static RobotPosition ROBOT_POSITION = RobotPosition.BLUE_WAREHOUSE;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -97,212 +253,122 @@ public class BlueRight extends LinearOpMode {
             telemetry.update();
         }
 
-        SampleMecanumDrive drivetrain = new SampleMecanumDrive(hardwareMap);
-        drivetrain.setPoseEstimate(STARTING_POSITION);
-
-        /*DcMotor Slider = hardwareMap.dcMotor.get("slider");
-        //Slider.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        Slider.setDirection(DcMotorSimple.Direction.REVERSE);*/
-
-        Trajectory step1_straf = null;
-        Trajectory step1_forward = null;
-        Trajectory step2_backward = null;
-        Trajectory step2_forward = null;
-        Trajectory step2_right_forward = null;
-        Trajectory step3_forward = null;
-        Trajectory step3_backward = null;
-        Trajectory step3_straf = null;
-        Trajectory step4_left_straf = null;
-        Trajectory step4_forward = null;
-        Trajectory step5_forward = null;
-        Trajectory step5_left_straf = null;
-        Trajectory step6_forward = null;
-        Trajectory step7_forward = null;
-        Trajectory step7_right_straf = null;
-        Trajectory step8_forward = null;
-
-        // Wait for the DS start button to be touched.
-        telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
-        telemetry.addData(">", "Touch Play to start Autonomous");
-        telemetry.update();
-        waitForStart();
-
-        //Step-1 : Scan for duck or Team Shipping Element
-        String shippingElementPosition = detector.getElementPosition();
-        telemetry.log().add("team shipping element position " + shippingElementPosition);
-        //shippingElementPosition = "LEFT";
+     */
 
 
-        if(shippingElementPosition == "CENTER") {
-            step1_forward = drivetrain.trajectoryBuilder(STARTING_POSITION).forward(STEP1_CENTER_FORWARD).build();
-           /* step2_backward = drivetrain.trajectoryBuilder(step1_forward.end()).back(STEP2_CENTER_BACKWARD).build();
-            step3_forward = drivetrain.trajectoryBuilder(step2_backward.end()).forward(STEP3_CENTER_RIGHT_FORWARD).build();
-            step4_left_straf = drivetrain.trajectoryBuilder(step3_forward.end()).strafeLeft(STEP4_CENTER_LEFT_STRAF).build();
-            step5_forward = drivetrain.trajectoryBuilder(step4_left_straf.end()).strafeLeft(STEP5_CENTER_FORWARD_BACKDROP).build();
-            step6_forward = drivetrain.trajectoryBuilder(step5_forward.end()).strafeLeft(STEP6_CENTER_BACKDROP_RIGHT_STRAF).build();
-            step7_forward = drivetrain.trajectoryBuilder(step6_forward.end()).strafeLeft(STEP7_CENTER_PARK_FORWARD).build();
+    private void initTfod() {
 
-            */
+        // Create the TensorFlow processor by using a builder.
 
+        telemetry.addLine("starting initTfod");
 
+        tfod = new TfodProcessor.Builder()
 
-        }  else if(shippingElementPosition == "LEFT"){
+                // Use setModelAssetName() if the TF Model is built in as an asset.
+                // Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
+                .setModelAssetName(TFOD_MODEL_FILE) //for default model
+                // .setModelFileName(TFOD_MODEL_FILE)  //for custom mode
+                .setModelLabels(LABELS)
+                //.setIsModelTensorFlow2(true)
+                //.setIsModelQuantized(true)
+                //.setModelInputSize(300)
+                .setModelAspectRatio(16.0 / 9.0)
 
-            step1_straf = drivetrain.trajectoryBuilder(STARTING_POSITION).strafeLeft(STEP1_LEFT_STRAF).build();
-            step2_forward = drivetrain.trajectoryBuilder(step1_straf.end()).forward(STEP2_LEFT_FORWARD).build();
-            /*step3_backward = drivetrain.trajectoryBuilder(step2_forward.end()).back(STEP3_LEFT_BACKWARD).build();
-            step4_forward = drivetrain.trajectoryBuilder(step3_backward.end()).forward(STEP3_LEFT_RIGHT_FORWARD).build();
-            step5_left_straf = drivetrain.trajectoryBuilder(step4_forward.end()).strafeLeft(STEP5_LEFT_LEFT_STRAF).build();
-            step6_forward = drivetrain.trajectoryBuilder(step5_left_straf.end()).forward(STEP5_LEFT_FORWARD_BACKDROP).build();
-            step7_right_straf = drivetrain.trajectoryBuilder(step6_forward.end()).strafeRight(STEP6_LEFT_BACKDROP_RIGHT_STRAF).build();
-            step8_forward = drivetrain.trajectoryBuilder(step7_right_straf.end()).forward(STEP7_LEFT_PARK_FORWARD).build();
+                .build();
 
-             */
+        // Create the vision portal by using a builder.
+        VisionPortal.Builder builder = new VisionPortal.Builder();
 
-
-
-        } else{ //TeamProp on RIGHT PixelMark
-
-            step1_forward = drivetrain.trajectoryBuilder(STARTING_POSITION).strafeLeft(STEP1_RIGHT_FORWARD).build();
-            step2_forward = drivetrain.trajectoryBuilder(step1_forward.end()).forward(STEP2_RIGHT_PIXELMARK_FORWARD).build();
-            /*step3_straf = drivetrain.trajectoryBuilder(step2_forward.end()).back(STEP3_RIGHT_RIGHT_STRAF).build();
-            step4_forward = drivetrain.trajectoryBuilder(step3_backward.end()).forward(STEP3_RIGHT_RIGHT_FORWARD).build();
-            step5_left_straf = drivetrain.trajectoryBuilder(step4_forward.end()).strafeLeft(STEP5_RIGHT_LEFT_STRAF).build();
-            step6_forward = drivetrain.trajectoryBuilder(step5_left_straf.end()).forward(STEP5_RIGHT_FORWARD_BACKDROP).build();
-            step7_right_straf = drivetrain.trajectoryBuilder(step6_forward.end()).strafeRight(STEP6_RIGHT_BACKDROP_RIGHT_STRAF).build();
-            step8_forward = drivetrain.trajectoryBuilder(step6_forward.end()).strafeLeft(STEP7_RIGHT_PARK_FORWARD).build();
-
-             */
-
-
+        // Set the camera (webcam vs. built-in RC phone camera).
+        if (USE_WEBCAM) {
+            builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam1"));
+        } else {
+            builder.setCamera(BuiltinCameraDirection.BACK);
         }
 
-        //long start = System.currentTimeMillis();
-        //As detection continue to happen since init, we can stop detection (stop streaming)
-        detector.stopDetection();
+        telemetry.addLine("after webcam");
 
-        //Step 2 - Turn
-        //drivetrain.followTrajectory(step2_forward);
-        if(shippingElementPosition == "CENTER") {
+        // Choose a camera resolution. Not all cameras support all resolutions.
+        // builder.setCameraResolution(new Size(640, 480));
 
-            //Step 1 - Strafe Right
-            drivetrain.followTrajectory(step1_forward);
+        // Enable the RC preview (LiveView).  Set "false" to omit camera monitoring.
+        builder.enableCameraMonitoring(true);
 
-            //Purple pixel drop code here
-            Grabber.setPosition(0.2);
-            /*
-            //Step 2 - Backward
-            drivetrain.followTrajectory(step2_backward);
-            drivetrain.turn(Math.toRadians(-135));
-            //Step 3 - Forward
-            drivetrain.followTrajectory(step3_forward);
+        // Set the stream format; MJPEG uses less bandwidth than default YUY2.
+        builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
 
-            //Step 4 - Straf
-            drivetrain.followTrajectory(step4_left_straf);
+        // Choose whether or not LiveView stops if no processors are enabled.
+        // If set "true", monitor shows solid orange screen if no processors enabled.
+        // If set "false", monitor shows camera view without annotations.
+        builder.setAutoStopLiveView(true);
 
-            //Step 5 - foward towards backfrop
-            drivetrain.followTrajectory(step5_forward);
+        // Set and enable the processor.
+        builder.addProcessor(tfod);
 
-            //Step 6 - right straf towards parkinglot
-            drivetrain.followTrajectory(step6_forward);
+        // Build the Vision Portal, using the above settings.
+        visionPortal = builder.build();
 
-            //Step 7 - foward towards parkinglot
-            drivetrain.followTrajectory(step7_forward);
+        telemetry.addLine(" builder.build()");
 
-             */
+        // Set confidence threshold for TFOD recognitions, at any time.
+        //tfod.setMinResultConfidence(0.75f);
+        tfod.setMinResultConfidence(0.5f);
 
 
-        } else if(shippingElementPosition == "LEFT") {
-            //Step 1 - Strafe left
-            drivetrain.followTrajectory(step1_straf);
+        // Disable or re-enable the TFOD processor at any time.
+        visionPortal.setProcessorEnabled(tfod, true);
 
-            //Step 2 - Forward
-            drivetrain.followTrajectory(step2_forward);
+        telemetry.addLine("end initTfod");
 
-            //Purple pixel drop code here
-            Grabber.setPosition(0.2);
+    }   // end method initTfod()
 
-            /*
-            //Step 3 - Backward
-            drivetrain.followTrajectory(step3_backward);
-            drivetrain.turn(Math.toRadians(-135));
+    public String startDetection() {
+        String teamPropPosition = "NOTFOUND";
 
+        List<Recognition> currentRecognitions = tfod.getRecognitions();
+        telemetry.addData("# Objects Detected", currentRecognitions.size());
 
-            //Step 4 - Straf
-            drivetrain.followTrajectory(step4_forward);
+        // Step through the list of recognitions and display info for each one.
+        for (Recognition recognition : currentRecognitions) {
 
-            //Step 5 - left straf
-            drivetrain.followTrajectory(step5_left_straf);
-
-            //Step 6 - toward backdrop
-            drivetrain.followTrajectory(step6_forward);
-
-            //Step 7 - right straf towards parkinglot foward towards parkinglot
-            drivetrain.followTrajectory(step7_right_straf);
-
-            //Step 8 - toward parkinglot
-            drivetrain.followTrajectory(step8_forward);
-
-             */
-
-        } else {  //RIGHT
-
-            //Step 1 - forward
-            drivetrain.followTrajectory(step1_forward);
-            drivetrain.turn(Math.toRadians(135));
-
-            //Step 2 - Forward
-            drivetrain.followTrajectory(step2_forward);
-
-            //Purple pixel drop code here
-            Grabber.setPosition(0.2);
-
-            /*
-            //Step 3 - right strafe
-            drivetrain.followTrajectory(step3_straf);
-
-            //Step 4 - Straf
-            drivetrain.followTrajectory(step4_forward);
-
-            //Step 5 - left straf
-            drivetrain.followTrajectory(step5_left_straf);
-
-            //Step 6 - toward backdrop
-            drivetrain.followTrajectory(step6_forward);
-
-            //Step 7 - right straf towards parkinglot foward towards parkinglot
-            drivetrain.followTrajectory(step7_right_straf);
-
-            //Step 8 - toward parkinglot
-            drivetrain.followTrajectory(step8_forward);
-
-             */
-
-        }
+            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+            telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
 
 
-        // parkRobot(backdropPosition, drivetrain);
+            if(recognition.getLabel() == "redprop" || recognition.getLabel() == "blueprop" ) {
 
+                double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
+                double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+                double propHeight = (recognition.getBottom() - recognition.getTop());
+                double propWidth =  (recognition.getRight() - recognition.getLeft());
+
+                telemetry.addLine("propHeight:" +propHeight +", propWidth:" +propWidth);
+                telemetry.addData("- Position", "%.0f / %.0f", x, y);
+
+                if(propHeight > 75 && propHeight <125 && propWidth > 75 && propWidth <125) {
+
+                    if (x < 200) {
+                        teamPropPosition = "LEFT";
+
+                    } else if (x >= 200 && x < 400) {
+                        teamPropPosition = "CENTER";
+
+                    } else {
+                        teamPropPosition = "RIGHT";
+
+                    }
+
+
+                    break;
+                }
+
+            }
+
+        }   // end for() loop
+
+        telemetry.addLine("after for loop in getTeamPropPosition");
+        return teamPropPosition;
 
     }
-
-  /*  private void parkRobot(int parkingPosition, SampleMecanumDrive drivetrain) {
-
-        Trajectory park_strafe = null;
-
-        if (parkingPosition == 1) {
-            park_strafe = drivetrain.trajectoryBuilder(drivetrain.getPoseEstimate()).strafeLeft(PARKING_ONE_STRAFE_LEFT).build();
-        } else if (parkingPosition == 2) {
-            park_strafe = drivetrain.trajectoryBuilder(drivetrain.getPoseEstimate()).strafeLeft(PARKING_TWO_STRAFE_LEFT).build();
-        } else {
-            park_strafe = drivetrain.trajectoryBuilder(drivetrain.getPoseEstimate()).strafeRight(PARKING_THREE_STRAFE_RIGHT).build();
-        }
-
-        drivetrain.followTrajectory(park_strafe);
-
-        Trajectory parkingBack = drivetrain.trajectoryBuilder(drivetrain.getPoseEstimate()).back(PARKING_BACK).build();
-        drivetrain.followTrajectory(parkingBack);
-    }*/
-
 
 }

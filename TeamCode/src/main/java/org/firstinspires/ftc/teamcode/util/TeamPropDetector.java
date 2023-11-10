@@ -26,7 +26,7 @@ public class TeamPropDetector {
     //private static final String TFOD_MODEL_FILE = "CenterStage.tflite";
     private static final String TFOD_MODEL_FILE = "TechKNOWLogic_Centerstage.tflite";
     //private static final String[] LABELS = { "testmodel", };
-    private static final String[] LABELS = { "blueprop","redprop", };
+    private static final String[] LABELS = { "blueprop","redprop"};
     //private static final String[] LABELS = { "Pixel",};
 
 
@@ -34,17 +34,12 @@ public class TeamPropDetector {
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
 
-
-    }
-
-    public void startDetection() {
-
         tfod = new TfodProcessor.Builder()
 
                 // Use setModelAssetName() if the TF Model is built in as an asset.
                 // Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
-                //.setModelAssetName(TFOD_MODEL_FILE) //for default model
-                .setModelFileName(TFOD_MODEL_FILE)  //for custom mode
+                .setModelAssetName(TFOD_MODEL_FILE) //for default model
+                //.setModelFileName(TFOD_MODEL_FILE)  //for custom mode
                 .setModelLabels(LABELS)
                 //.setIsModelTensorFlow2(true)
                 //.setIsModelQuantized(true)
@@ -87,44 +82,57 @@ public class TeamPropDetector {
         //tfod.setMinResultConfidence(0.75f);
         tfod.setMinResultConfidence(0.5f);
 
-
         // Disable or re-enable the TFOD processor at any time.
         visionPortal.setProcessorEnabled(tfod, true);
 
+        //visionPortal.stopStreaming();
     }
 
-    public String getTeamPropPosition() {
-
-        String teamPropPosition = "CENTER";
+    public String startDetection() {
+        String teamPropPosition = "NOTFOUND";
 
         List<Recognition> currentRecognitions = tfod.getRecognitions();
         telemetry.addData("# Objects Detected", currentRecognitions.size());
 
         // Step through the list of recognitions and display info for each one.
         for (Recognition recognition : currentRecognitions) {
-            double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-            double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
 
-            telemetry.addData(""," ");
             telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-            telemetry.addData("- Position", "%.0f / %.0f", x, y);
             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
+
+            if(recognition.getLabel() == "redprop" || recognition.getLabel() == "blueprop" ) {
+
+                double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
+                double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+
+
+
+                telemetry.addData("- Position", "%.0f / %.0f", x, y);
+
+                if( x < 200 ){
+                    teamPropPosition = "LEFT";
+
+                } else if ( x >= 200 && x < 400){
+                    teamPropPosition = "CENTER";
+
+                } else {
+                    teamPropPosition = "RIGHT";
+
+                }
+
+                break;
+            }
+
         }   // end for() loop
 
         telemetry.addLine("after for loop in getTeamPropPosition");
-
         return teamPropPosition;
-
 
     }
 
     public void stopDetection() {
-
         visionPortal.stopStreaming();
         visionPortal.close();
-
-
     }
-
 
 }

@@ -65,11 +65,11 @@ public class TestTFOD extends LinearOpMode {
      */
     private VisionPortal visionPortal;
     //private static final String TFOD_MODEL_FILE = "testmodel.tflite";
-    private static final String TFOD_MODEL_FILE = "CenterStage.tflite";
-    //private static final String TFOD_MODEL_FILE = "TechKNOWLogic_Centerstage.tflite";
+    //private static final String TFOD_MODEL_FILE = "CenterStage.tflite";
+    private static final String TFOD_MODEL_FILE = "TechKNOWLogic_Centerstage.tflite";
     //private static final String[] LABELS = { "testmodel", };
-    //private static final String[] LABELS = { "blueprop","redprop" };
-    private static final String[] LABELS = { "Pixel"};
+    private static final String[] LABELS = { "blueprop","redprop" };
+    //private static final String[] LABELS = { "Pixel"};
 
     @Override
     public void runOpMode() {
@@ -202,10 +202,21 @@ public class TestTFOD extends LinearOpMode {
         // Step through the list of recognitions and display info for each one.
         for (Recognition recognition : currentRecognitions) {
 
+            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+
 
             if(recognition.getLabel() == "redprop" || recognition.getLabel() == "blueprop" ) {
+
+                double propHeight = (recognition.getTop()  - recognition.getBottom());
+
+                telemetry.addLine("propHeight:" +propHeight);
+                telemetry.addLine("recognition.getLeft():" + (recognition.getRight() - recognition.getLeft()));
+
                 double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
                 double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+
+                telemetry.addData("- Position", "%.0f / %.0f", x, y);
+
                 if( x < 200 ){
                     teamPropPosition = "LEFT";
 
@@ -219,7 +230,7 @@ public class TestTFOD extends LinearOpMode {
 
             telemetry.addLine("teamPropPosition : "+ teamPropPosition);
 
-            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+
             //telemetry.addData("- Position", "%.0f / %.0f", x, y);
             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
            // telemetry.addData("- Size", "%.0f x %.0f", recognition.ge, recognition.getHeight());

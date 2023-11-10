@@ -14,10 +14,9 @@ public class ServoTest extends OpMode {
     @Override
     public void init() {
 
-        Grabber = hardwareMap.get(Servo.class, "newgrabber");
+        Grabber = hardwareMap.get(Servo.class, "purpledrop");
         Grabber.scaleRange(0, 1);
         Grabber.setPosition(GrabberPos);
-
     }
 
     @Override

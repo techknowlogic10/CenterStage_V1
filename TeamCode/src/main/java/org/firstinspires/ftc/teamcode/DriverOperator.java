@@ -21,18 +21,23 @@ public class DriverOperator extends OpMode {
     DcMotor Slider = null;
 
     Servo Drone = null;
-    Servo BackDrop = null;
+
+    Servo Elbow = null;
     Servo Grabber = null;
     Servo ElevatorLock = null;
-
+    Servo PurpleDrop = null;
+    Servo Wrist = null;
 
     double DronePos = 0;
-    double BackDropPos = 0.8;
+    double ElbowPos = 0.9 ;
     double GrabberPos = 0.8;
+    double ElevatorLockPos = 0.5;
+    double PurpleDropPos = 0.9;
+    double WristPos = 0;
 
     double SliderSpeed = 0;
     double ElevatorPower = 0;
-    double ElevatorLockPower = 0.5;
+    //double ElevatorLockPower = 0.5;
     double Drivepower = 2;
 
 
@@ -57,14 +62,21 @@ public class DriverOperator extends OpMode {
         Drone = hardwareMap.get(Servo.class, "drone");
         Drone.scaleRange(0, 1);
 
-        BackDrop = hardwareMap.get(Servo.class, "backdrop");
-        BackDrop.scaleRange(0, 1);
-        BackDrop.setPosition(BackDropPos);
+        Elbow = hardwareMap.get(Servo.class, "elbow");
+        //Elbow.scaleRange(0, 1);
+        Elbow.setPosition(ElbowPos);
+
+        Wrist = hardwareMap.get(Servo.class, "wrist");
+        Wrist.scaleRange(0.5, 1);
+        Wrist.setPosition(WristPos);
 
         Grabber = hardwareMap.get(Servo.class, "grabber");
-        Grabber.scaleRange(0.2, 0.8);
+        Grabber.scaleRange(0.5, 1);
         Grabber.setPosition(GrabberPos);
 
+        /*PurpleDrop = hardwareMap.get(Servo.class, "purpledrop");
+        //Grabber.scaleRange(0.2, 0.8);
+        Grabber.setPosition(PurpleDropPos);*/
 
         Slider = hardwareMap.dcMotor.get("slider");
         Slider.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -76,7 +88,7 @@ public class DriverOperator extends OpMode {
 
         ElevatorLock = hardwareMap.get(Servo.class, "elevatorlock");
         ElevatorLock.scaleRange(0, 1);
-        ElevatorLock.setPosition(ElevatorLockPower);
+        ElevatorLock.setPosition(ElevatorLockPos);
     }
 
     @Override
@@ -122,11 +134,52 @@ public class DriverOperator extends OpMode {
         Slider.setPower(sliderspeed);
 
         DronePos = 0;
-        GrabberPos =0;
-        BackDropPos = 0;
+        GrabberPos =0.01;
+        ElbowPos = 1;
 
-        //grabber claw open and close
+
+
+        //Elbow up and down
+        telemetry.addLine("before Elbow");
+        //Elbow.setPower(0);
+        if (gamepad2.dpad_up){
+            ElbowPos = 0.9;
+            Elbow.setPosition(ElbowPos);
+
+        } else  if (gamepad2.dpad_down){
+            ElbowPos = 1;
+            Elbow.setPosition(ElbowPos);
+        }
+
+        //Wrist up and down   --Driver
+        telemetry.addLine("before Wrist");
+        if (gamepad1.dpad_up){
+            WristPos = 0.9;
+            Wrist.setPosition(WristPos);
+
+        } else  if (gamepad1.dpad_down){
+            WristPos = 1;
+            Wrist.setPosition(WristPos);
+        }
+
+        //grabber in take and open
         telemetry.addLine("before grabber");
+        if (gamepad2.right_bumper){
+            GrabberPos = 0.01;
+            telemetry.addLine("if rb grabber GrabberPos:" + GrabberPos);
+            Grabber.setPosition(GrabberPos);
+
+        } else if (gamepad2.left_bumper){
+
+            GrabberPos = 0.2
+            ;
+            telemetry.addLine(" else lb grabber GrabberPos:" + GrabberPos);
+            Grabber.setPosition(GrabberPos);
+        }
+
+
+        //purple intake and drop
+       /* telemetry.addLine("before purple drop");
         if (gamepad2.right_bumper){
             GrabberPos = 0.8;
             telemetry.addLine("if rb grabber GrabberPos:" + GrabberPos);
@@ -136,7 +189,7 @@ public class DriverOperator extends OpMode {
             GrabberPos = 0.2;
             telemetry.addLine(" else lb grabber GrabberPos:" + GrabberPos);
             Grabber.setPosition(GrabberPos);
-        }
+        }*/
 
 
         //launching drone
@@ -149,28 +202,18 @@ public class DriverOperator extends OpMode {
             Drone.setPosition(DronePos);
         }*/
 
-        //backdrop up and down
-        if (gamepad2.dpad_up){
-            BackDropPos = 1;
-            BackDrop.setPosition(BackDropPos);
-
-        } else  if (gamepad2.dpad_down){
-            BackDropPos = 0;
-            BackDrop.setPosition(BackDropPos);
-        }
-
         //Elevator up and down
         ElevatorPower = gamepad2.left_stick_y;
-        ElevatorPower = ElevatorPower;
+       // ElevatorPower = ElevatorPower;
         Elevator.setPower(-ElevatorPower);
 
         //locking elevator
         telemetry.addLine("locking elevator");
         if (gamepad2.left_trigger > 0 && gamepad2.right_trigger > 0){
 
-            ElevatorLockPower = 1;
-            telemetry.addLine("if..gamepad2.dpad_left:"+ ElevatorLockPower);
-            ElevatorLock.setPosition(ElevatorLockPower);
+            ElevatorLockPos = 1;
+            telemetry.addLine("if..gamepad2.dpad_left:"+ ElevatorLockPos);
+            ElevatorLock.setPosition(ElevatorLockPos);
 
             boolean in_loop = true;
 
@@ -181,9 +224,9 @@ public class DriverOperator extends OpMode {
 
 
         } else if (gamepad2.dpad_right){
-            ElevatorLockPower = 0.7;
-            telemetry.addLine("else..gamepad2.dpad_right:"+ ElevatorLockPower);
-            ElevatorLock.setPosition(ElevatorLockPower);
+            ElevatorLockPos = 0.7;
+            telemetry.addLine("else..gamepad2.dpad_right:"+ ElevatorLockPos);
+            ElevatorLock.setPosition(ElevatorLockPos);
         }
 
         telemetry.update();
