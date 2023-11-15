@@ -26,19 +26,20 @@ public class DriverOperator extends OpMode {
     Servo Grabber = null;
     Servo ElevatorLock = null;
     Servo PurpleDrop = null;
-    Servo Wrist = null;
+    Servo YellowDrop = null;
 
     double DronePos = 0;
-    double ElbowPos = 0.9 ;
-    double GrabberPos = 0;
+    double ElbowPos = 0.8 ;
+    double GrabberPos = 0.5;
     double ElevatorLockPos = 0.5;
     double PurpleDropPos = 0.9;
-    double WristPos = 0;
+   double YellowDropPos = 0;
+
 
     double SliderSpeed = 0;
     double ElevatorPower = 0;
     //double ElevatorLockPower = 0.5;
-    double Drivepower = 2;
+    double Drivepower = 3;
 
 
     @Override
@@ -63,15 +64,18 @@ public class DriverOperator extends OpMode {
         Drone.scaleRange(0, 1);
 
         Elbow = hardwareMap.get(Servo.class, "elbow");
-        //Elbow.scaleRange(0, 1);
+        Elbow.scaleRange(0, 1);
         Elbow.setPosition(ElbowPos);
 
-        Wrist = hardwareMap.get(Servo.class, "wrist");
-        Wrist.scaleRange(0.5, 1);
-        Wrist.setPosition(WristPos);
+
+       /* YellowDrop = hardwareMap.get(Servo.class, "yellowdrop");
+        YellowDrop.scaleRange(0, 1);
+        YellowDrop.setPosition(YellowDropPos);
+        telemetry.addLine("intial YellowDrop  position: " +YellowDrop.getPosition());*/
 
         Grabber = hardwareMap.get(Servo.class, "grabber");
         Grabber.scaleRange(0, 1);
+        telemetry.addLine("grabber current position: " +Grabber.getPosition());
         Grabber.setPosition(GrabberPos);
 
 
@@ -133,41 +137,43 @@ public class DriverOperator extends OpMode {
 
         //Elbow up and down
         telemetry.addLine("before Elbow");
-        //Elbow.setPower(0);
+
         if (gamepad2.dpad_up){
-            ElbowPos = 0.9;
+            ElbowPos = 0.55;
             Elbow.setPosition(ElbowPos);
+            telemetry.addLine("Elbow dpad_up position: " +Elbow.getPosition());
 
         } else  if (gamepad2.dpad_down){
-            ElbowPos = 1;
+            ElbowPos = 0.85;
             Elbow.setPosition(ElbowPos);
+            telemetry.addLine(" Elbow dpad_down position: " +Elbow.getPosition());
         }
-
-        //Wrist up and down   --Driver
-        telemetry.addLine("before Wrist");
-        if (gamepad1.dpad_up){
-            WristPos = 0;
-            Wrist.setPosition(WristPos);
-
-        } else  if (gamepad1.dpad_down){
-            WristPos = 0.5;
-            Wrist.setPosition(WristPos);
-        }
-
         //grabber in take and open
         telemetry.addLine("before grabber");
         if (gamepad2.right_bumper){
-            GrabberPos = 0.2;
-            telemetry.addLine("if rb grabber GrabberPos:" + GrabberPos);
+            GrabberPos = 0.9;
             Grabber.setPosition(GrabberPos);
+            telemetry.addLine(" Grabber right_bumper position: " +Grabber.getPosition());
 
         } else if (gamepad2.left_bumper){
 
-            GrabberPos = 0;
-            telemetry.addLine(" else lb grabber GrabberPos:" + GrabberPos);
+            GrabberPos = 0.15;
             Grabber.setPosition(GrabberPos);
+            telemetry.addLine(" Grabber left_bumper position: " +Grabber.getPosition());
         }
 
+
+        //yellow drop to be commented
+       /* telemetry.addLine("before yellow drop");
+        if (gamepad2.dpad_left){
+            YellowDropPos = 1;
+            YellowDrop.setPosition(YellowDropPos);
+            telemetry.addLine(" Yellowdrop gamepad2.dpad_left position: " +YellowDrop.getPosition());
+        } else if (gamepad2.dpad_right){
+            YellowDropPos = 0;
+            YellowDrop.setPosition(YellowDropPos);
+            telemetry.addLine("Yellowdrop gamepad2.dpad_right position: " +YellowDrop.getPosition());
+        }*/
 
         //purple intake and drop
        /* telemetry.addLine("before purple drop");
@@ -196,6 +202,7 @@ public class DriverOperator extends OpMode {
         //Elevator up and down
         ElevatorPower = gamepad2.left_stick_y;
        // ElevatorPower = ElevatorPower;
+        //ElevatorPower = ElevatorPower/2;
         Elevator.setPower(-ElevatorPower);
 
         //locking elevator

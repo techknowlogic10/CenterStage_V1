@@ -139,8 +139,8 @@ public class TestTFOD extends LinearOpMode {
                 //.setIsModelTensorFlow2(true)
                 //.setIsModelQuantized(true)
                 //.setModelInputSize(300)
-                .setModelAspectRatio(16.0 / 9.0)
-
+                //.setModelAspectRatio(16.0 / 9.0)
+                .setModelAspectRatio(16.0 / 8.0)
                 .build();
 
         // Create the vision portal by using a builder.
@@ -158,6 +158,7 @@ public class TestTFOD extends LinearOpMode {
         // Choose a camera resolution. Not all cameras support all resolutions.
        // builder.setCameraResolution(new Size(640, 480));
 
+
         // Enable the RC preview (LiveView).  Set "false" to omit camera monitoring.
         builder.enableCameraMonitoring(true);
 
@@ -169,6 +170,8 @@ public class TestTFOD extends LinearOpMode {
         // If set "false", monitor shows camera view without annotations.
         builder.setAutoStopLiveView(true);
 
+        tfod.setZoom(1);
+
         // Set and enable the processor.
         builder.addProcessor(tfod);
 
@@ -179,7 +182,7 @@ public class TestTFOD extends LinearOpMode {
 
         // Set confidence threshold for TFOD recognitions, at any time.
         //tfod.setMinResultConfidence(0.75f);
-        tfod.setMinResultConfidence(0.5f);
+        tfod.setMinResultConfidence(0.65f);
 
 
         // Disable or re-enable the TFOD processor at any time.
@@ -195,6 +198,8 @@ public class TestTFOD extends LinearOpMode {
     private void telemetryTfod() {
 
         String teamPropPosition = "CENTER";
+
+
 
         List<Recognition> currentRecognitions = tfod.getRecognitions();
         telemetry.addData("# Objects Detected", currentRecognitions.size());

@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp
-public class ServoTest extends OpMode {
+public class SliderTest extends OpMode {
 
     Servo Grabber = null;
     double GrabberPos = 0;
@@ -14,11 +14,9 @@ public class ServoTest extends OpMode {
     @Override
     public void init() {
 
-        //Grabber = hardwareMap.get(Servo.class, "yellowdrop");
-        Grabber = hardwareMap.get(Servo.class, "elbow");
-        telemetry.addLine("current position" + Grabber.getPosition());
-       // Grabber.scaleRange(0, 1);
-       // Grabber.setPosition(GrabberPos);
+        Grabber = hardwareMap.get(Servo.class, "yellowdrop");
+        Grabber.scaleRange(0, 1);
+        Grabber.setPosition(GrabberPos);
     }
 
     @Override
@@ -26,16 +24,14 @@ public class ServoTest extends OpMode {
 
         telemetry.addLine("before grabber");
         if (gamepad2.right_bumper){
-            GrabberPos = 0;
+            GrabberPos = 0.01;
             telemetry.addLine("if rb grabber GrabberPos:" + GrabberPos);
             Grabber.setPosition(GrabberPos);
-            telemetry.addLine("current position" + Grabber.getPosition());
 
         } else if (gamepad2.left_bumper){
             GrabberPos = 1;
             telemetry.addLine(" else lb grabber GrabberPos:" + GrabberPos);
             Grabber.setPosition(GrabberPos);
-            telemetry.addLine("current position" + Grabber.getPosition());
         }
 
 
