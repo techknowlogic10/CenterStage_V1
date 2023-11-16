@@ -79,13 +79,14 @@ public class RedRight extends AbstractAutonomusDrive {
        // TeamPropDetector teamPropDetector = new TeamPropDetector(hardwareMap, telemetry);
       //  String shippingElementPosition = "NOTFOUND";
 
-            while (opModeInInit() && shippingElementPosition == "NOTFOUND"  ) {
+           // while (opModeInInit() && shippingElementPosition == "NOTFOUND"  ) {
+        while (opModeInInit()) {
 
-                telemetry.addLine("while opModeIsActive");
+              //  telemetry.addLine("while opModeIsActive");
 
                 //telemetryTfod();
                 shippingElementPosition = startDetection();
-
+                telemetry.addLine("Position:"+shippingElementPosition);
 
                 // Push telemetry to the Driver Station.
                 telemetry.update();
@@ -126,7 +127,7 @@ public class RedRight extends AbstractAutonomusDrive {
 
         }*/
             //teamPropDetector.startDetection();
-       /* while (opModeInInit()) {
+        /*while (opModeInInit()) {
             telemetry.addLine("startDetection- teampropposition: " + teamPropDetector.startDetection());
             telemetry.update();
         }*/
@@ -147,25 +148,27 @@ public class RedRight extends AbstractAutonomusDrive {
             telemetry.addLine("INSIDE IF CENTER");
 
             trajSeq = drivetrain.trajectorySequenceBuilder(STARTING_POSITION)
-                    .forward(26)
+                    .strafeRight(12)
+                    .forward(25.5)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
-                    //.waitSeconds(1)
+                    .waitSeconds(1)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(1)) // up servo
                     .back(7)
                     .turn(Math.toRadians(-150)) //clockwise
                     .strafeLeft(14)
                     .forward(32)
-                    .waitSeconds(1)
+                    //.waitSeconds(1)
                     .addTemporalMarker(() -> slider.goUp()) // slider up
                     .waitSeconds(2)
                     .addTemporalMarker(() -> Grabber.setPosition(0.01)) // drop yellow pixel
                     //.addTemporalMarker(() -> YellowDrop.setPosition(1)) // drop yellow pixel
-                    .waitSeconds(1)
+                    //.waitSeconds(0.5)
                    // .addTemporalMarker(() -> YellowDrop.setPosition(0.01)) // up servo
                     .back(5)
+                    .addTemporalMarker(() -> slider.goToHome()) // slider up
                     //.waitSeconds(1)
                     .strafeRight(42)
-                    .forward(13)
+                    .forward(10)
                     .build();
 
         } else if(shippingElementPosition == "LEFT") {
@@ -177,24 +180,25 @@ public class RedRight extends AbstractAutonomusDrive {
                     .turn(Math.toRadians(150)) //clockwise
                     .forward(5)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
-                   // .waitSeconds(1)
+                    .waitSeconds(1)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(1)) // up servo
                     .back(8)
                     .turn(Math.toRadians(-150)) //clockwise
-                    .waitSeconds(1)
+                    .waitSeconds(0.5)
                     .turn(Math.toRadians(-150)) //clockwise
-                    .strafeLeft(25)
-                    .forward(32)
+                    .strafeLeft(28)
+                    .forward(33)
                     .addTemporalMarker(() -> slider.goUp()) // slider up
                     .waitSeconds(2)
                     .addTemporalMarker(() -> Grabber.setPosition(0.01)) // drop yellow pixel
                     //.addTemporalMarker(() -> YellowDrop.setPosition(1)) // drop yellow pixel
-                    .waitSeconds(1)
+                   // .waitSeconds(0.5)
                     // .addTemporalMarker(() -> YellowDrop.setPosition(0.01)) // up servo
                     .back(5)
-                    .waitSeconds(1)
+                    .addTemporalMarker(() -> slider.goToHome()) // slider up
+                   // .waitSeconds(1)
                     .strafeRight(50)
-                    .forward(13)
+                    .forward(10)
                     .build();
 
 
@@ -202,25 +206,26 @@ public class RedRight extends AbstractAutonomusDrive {
             telemetry.addLine("INSIDE ELSE RIGHT");
 
             trajSeq = drivetrain.trajectorySequenceBuilder(STARTING_POSITION)
-                    .strafeRight(18)
+                    .strafeRight(22)
                     .forward(16)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
-                    //.waitSeconds(1)
+                    .waitSeconds(1)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(1)) // up servo
                     .back(7)
                     .turn(Math.toRadians(-150)) //clockwise
-                    .strafeLeft(10)
-                    .forward(25)
+                    .strafeLeft(20)
+                    .forward(26)
                     .addTemporalMarker(() -> slider.goUp()) // slider up
                     .waitSeconds(2)
                     .addTemporalMarker(() -> Grabber.setPosition(0.01)) // drop yellow pixel
                     //.addTemporalMarker(() -> YellowDrop.setPosition(1)) // drop yellow pixel
-                    .waitSeconds(1)
+                    //.waitSeconds(1)
                     // .addTemporalMarker(() -> YellowDrop.setPosition(0.01)) // up servo
                     .back(5)
+                    .addTemporalMarker(() -> slider.goToHome()) // slider up
                     //.waitSeconds(1)
                     .strafeRight(29)
-                    .forward(12)
+                    .forward(10)
                     .build();
 
         }

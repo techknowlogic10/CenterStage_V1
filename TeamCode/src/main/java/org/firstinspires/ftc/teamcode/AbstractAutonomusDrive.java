@@ -114,7 +114,7 @@ public abstract class AbstractAutonomusDrive extends LinearOpMode {
                 telemetry.addLine("propHeight:" +propHeight +", propWidth:" +propWidth);
                 telemetry.addData("- Position", "%.0f / %.0f", x, y);
 
-                if(propHeight > 70 && propHeight <125 && propWidth > 70 && propWidth <125) {
+                if(propHeight > 70 && propHeight < 140 && propWidth > 70 && propWidth < 140) {
 
                     if (x < 200) {
                         teamPropPosition = "LEFT";
