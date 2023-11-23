@@ -32,6 +32,34 @@ public class BlueLeft extends AbstractAutonomusDrive {
     private static final String[] LABELS = { "blueprop","redprop"};
     //private static final String[] LABELS = { "Pixel",};
 
+    public static double angle = 95;
+
+    public static double c1strafeleft = 35;
+    public static double c2forward = 30;
+    public static double c3back = 7;
+    public static double c4strafeleft = 14;
+    public static double c5forward = 34.5;
+    public static double c6back = 5;
+    public static double c7strafeleft = 42;
+    public static double c8forward = 10;
+
+    public static double l1strafeleft = 35;
+    public static double l2forward = 17;
+    public static double l3back = 7;
+    public static double l4forward = 20;
+    public static double l5back = 7;
+    public static double l6strafeleft = 29;
+    public static double l7forward = 10;
+
+    public static double r1forward = 24;
+    public static double r2forward = 5;
+    public static double r3back = 8;
+    public static double r4strafeleft = 25;
+    public static double r5forward = 28;
+    public static double r6back = 5;
+    public static double r7strafeleft = 50;
+    public static double r8forward = 10;
+
 
 
     @Override
@@ -149,16 +177,17 @@ public class BlueLeft extends AbstractAutonomusDrive {
 
             telemetry.addLine("INSIDE IF CENTER");
 
+
             trajSeq = drivetrain.trajectorySequenceBuilder(STARTING_POSITION)
-                    .strafeLeft(20)
-                    .forward(25)
+                    .strafeLeft(c1strafeleft)
+                    .forward(c2forward)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
                     .waitSeconds(1)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(1)) // up servo
-                    .back(7)
-                    .turn(Math.toRadians(150)) //clockwise
-                    .strafeLeft(14)
-                    .forward(26)
+                    .back(c3back)
+                    .turn(Math.toRadians(angle)) //clockwise
+                    .strafeLeft(c4strafeleft)
+                    .forward(c5forward)
                    // .waitSeconds(1)
                     .addTemporalMarker(() -> slider.goUp()) // slider up
                     .waitSeconds(2)
@@ -166,11 +195,11 @@ public class BlueLeft extends AbstractAutonomusDrive {
                     //.addTemporalMarker(() -> YellowDrop.setPosition(1)) // drop yellow pixel
                    // .waitSeconds(1)
                     // .addTemporalMarker(() -> YellowDrop.setPosition(0.01)) // up servo
-                    .back(5)
+                    .back(c6back)
                     .addTemporalMarker(() -> slider.goToHome()) // slider up
                    // .waitSeconds(1)
-                    .strafeLeft(42)
-                    .forward(10)
+                    .strafeLeft(c7strafeleft)
+                    .forward(c8forward)
                     .build();
 
         } else if(shippingElementPosition == "LEFT") {
@@ -178,26 +207,23 @@ public class BlueLeft extends AbstractAutonomusDrive {
             telemetry.addLine("INSIDE ELSE LEFT");
 
             trajSeq = drivetrain.trajectorySequenceBuilder(STARTING_POSITION)
-                    .strafeLeft(35)
-                    .forward(17)
+                    .strafeLeft(l1strafeleft)
+                    .forward(l2forward)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
                     .waitSeconds(1)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(1)) // up servo
-                    .back(7)
-                    .turn(Math.toRadians(150)) //clockwise
+                    .back(l3back)
+                    .turn(Math.toRadians(angle)) //clockwise
                     //.strafeLeft(10)
-                    .forward(20)
+                    .forward(l4forward)
                     .addTemporalMarker(() -> slider.goUp()) // slider up
                     .waitSeconds(2)
                     .addTemporalMarker(() -> Grabber.setPosition(0.01)) // drop yellow pixel
-                    //.addTemporalMarker(() -> YellowDrop.setPosition(1)) // drop yellow pixel
-                   // .waitSeconds(1)
-                    // .addTemporalMarker(() -> YellowDrop.setPosition(0.01)) // up servo
-                    .back(5)
+                    .back(l5back)
                     .addTemporalMarker(() -> slider.goToHome()) // slider up
                    // .waitSeconds(1)
-                    .strafeLeft(29)
-                    .forward(10)
+                    .strafeLeft(l6strafeleft)
+                    .forward(l7forward)
                     .build();
 
 
@@ -205,30 +231,31 @@ public class BlueLeft extends AbstractAutonomusDrive {
 
             telemetry.addLine("INSIDE ELSE IF RIGHT");
 
+
             trajSeq = drivetrain.trajectorySequenceBuilder(STARTING_POSITION)
-                    .forward(24)
-                    .turn(Math.toRadians(-150)) //clockwise
-                    .forward(5)
+                    .forward(r1forward)
+                    .turn(Math.toRadians(-angle)) //clockwise
+                    .forward(r2forward)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
                     .waitSeconds(1)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(1)) // up servo
-                    .back(8)
-                    .turn(Math.toRadians(150)) //clockwise
+                    .back(r3back)
+                    .turn(Math.toRadians(angle)) //clockwise
                     .waitSeconds(0.5)
-                    .turn(Math.toRadians(150)) //clockwise
-                    .strafeLeft(25)
-                    .forward(28)
+                    .turn(Math.toRadians(angle)) //clockwise
+                    .strafeLeft(r4strafeleft)
+                    .forward(r5forward)
                     .addTemporalMarker(() -> slider.goUp()) // slider up
                     .waitSeconds(2)
                     .addTemporalMarker(() -> Grabber.setPosition(0.01)) // drop yellow pixel
                     //.addTemporalMarker(() -> YellowDrop.setPosition(1)) // drop yellow pixel
                     //.waitSeconds(1)
                     // .addTemporalMarker(() -> YellowDrop.setPosition(0.01)) // up servo
-                    .back(5)
+                    .back(r6back)
                     .addTemporalMarker(() -> slider.goToHome()) // slider up
                    // .waitSeconds(1)
-                    .strafeLeft(50)
-                    .forward(10)
+                    .strafeLeft(r7strafeleft)
+                    .forward(r8forward)
                     .build();
 
 

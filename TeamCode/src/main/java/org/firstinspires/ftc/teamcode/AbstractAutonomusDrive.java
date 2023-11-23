@@ -17,6 +17,8 @@ public abstract class AbstractAutonomusDrive extends LinearOpMode {
 
     private static final String TFOD_MODEL_FILE = "TechKNOWLogic_Centerstage.tflite";
 
+    //Centerstage_15004.tflite
+
     private static final String[] LABELS = { "blueprop","redprop"};
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera

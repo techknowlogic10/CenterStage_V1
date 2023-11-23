@@ -32,7 +32,25 @@ public class RedRight extends AbstractAutonomusDrive {
     private static final String[] LABELS = { "blueprop","redprop"};
     //private static final String[] LABELS = { "Pixel",};
 
+    public static double angle = 95;
 
+    public static double cstraferight = 19;
+    public static double cforward = 26.5;
+    public static double cback = 7;
+    public static double cstrafeleft = 12;
+    public static double c2forward = 30.5;
+    public static double c2back = 5;
+    public static double c2straferight = 63;
+    public static double c3forward = 12;
+
+    public static double lforward = 25;
+    public static double l2forward = 5.5;
+    public static double lback = 8;
+    public static double lstrafeleft = 19;
+    public static double l3forward = 32;
+    public static double l2back = 5;
+    public static double lstraferight = 60;
+    public static double l4forward = 10;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -41,7 +59,6 @@ public class RedRight extends AbstractAutonomusDrive {
         Servo PurpleDrop = hardwareMap.get(Servo.class, "purpledrop");
         //PurpleDrop.scaleRange(0.01, 0.4);
         //PurpleDrop.setPosition(0.4);
-
         //Servo YellowDrop = hardwareMap.get(Servo.class, "yellowdrop");
 
 
@@ -148,15 +165,15 @@ public class RedRight extends AbstractAutonomusDrive {
             telemetry.addLine("INSIDE IF CENTER");
 
             trajSeq = drivetrain.trajectorySequenceBuilder(STARTING_POSITION)
-                    .strafeRight(12)
-                    .forward(25.5)
+                    .strafeRight(cstraferight)
+                    .forward(cforward)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
                     .waitSeconds(1)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(1)) // up servo
-                    .back(7)
-                    .turn(Math.toRadians(-150)) //clockwise
-                    .strafeLeft(14)
-                    .forward(32)
+                    .back(cback)
+                    .turn(Math.toRadians(-95)) //clockwise
+                    .strafeLeft(cstrafeleft)
+                    .forward(c2forward)
                     //.waitSeconds(1)
                     .addTemporalMarker(() -> slider.goUp()) // slider up
                     .waitSeconds(2)
@@ -164,41 +181,43 @@ public class RedRight extends AbstractAutonomusDrive {
                     //.addTemporalMarker(() -> YellowDrop.setPosition(1)) // drop yellow pixel
                     //.waitSeconds(0.5)
                    // .addTemporalMarker(() -> YellowDrop.setPosition(0.01)) // up servo
-                    .back(5)
+                    .back(c2back)
                     .addTemporalMarker(() -> slider.goToHome()) // slider up
                     //.waitSeconds(1)
-                    .strafeRight(42)
-                    .forward(10)
+                    .strafeRight(c2straferight) //75
+                    .forward(c3forward)
                     .build();
 
         } else if(shippingElementPosition == "LEFT") {
 
             telemetry.addLine("INSIDE ELSE IF LEFT");
 
+
+
             trajSeq = drivetrain.trajectorySequenceBuilder(STARTING_POSITION)
-                    .forward(24)
-                    .turn(Math.toRadians(150)) //clockwise
-                    .forward(5)
+                    .forward(lforward)
+                    .turn(Math.toRadians(angle)) //clockwise
+                    .forward(l2forward)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
                     .waitSeconds(1)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(1)) // up servo
-                    .back(8)
-                    .turn(Math.toRadians(-150)) //clockwise
+                    .back(lback)
+                    .turn(Math.toRadians(-angle)) //clockwise
                     .waitSeconds(0.5)
-                    .turn(Math.toRadians(-150)) //clockwise
-                    .strafeLeft(28)
-                    .forward(33)
+                    .turn(Math.toRadians(-angle)) //clockwise
+                    .strafeLeft(lstrafeleft)
+                    .forward(l3forward)
                     .addTemporalMarker(() -> slider.goUp()) // slider up
                     .waitSeconds(2)
                     .addTemporalMarker(() -> Grabber.setPosition(0.01)) // drop yellow pixel
                     //.addTemporalMarker(() -> YellowDrop.setPosition(1)) // drop yellow pixel
                    // .waitSeconds(0.5)
                     // .addTemporalMarker(() -> YellowDrop.setPosition(0.01)) // up servo
-                    .back(5)
+                    .back(l2back)
                     .addTemporalMarker(() -> slider.goToHome()) // slider up
                    // .waitSeconds(1)
-                    .strafeRight(50)
-                    .forward(10)
+                    .strafeRight(lstraferight)
+                    .forward(l4forward)
                     .build();
 
 
@@ -206,15 +225,15 @@ public class RedRight extends AbstractAutonomusDrive {
             telemetry.addLine("INSIDE ELSE RIGHT");
 
             trajSeq = drivetrain.trajectorySequenceBuilder(STARTING_POSITION)
-                    .strafeRight(22)
-                    .forward(16)
+                    .strafeRight(26) // 22
+                    .forward(20) //20
                     .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
                     .waitSeconds(1)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(1)) // up servo
                     .back(7)
-                    .turn(Math.toRadians(-150)) //clockwise
-                    .strafeLeft(20)
-                    .forward(26)
+                    .turn(Math.toRadians(-95)) //clockwise
+                    .strafeLeft(15) //20
+                    .forward(30) //26
                     .addTemporalMarker(() -> slider.goUp()) // slider up
                     .waitSeconds(2)
                     .addTemporalMarker(() -> Grabber.setPosition(0.01)) // drop yellow pixel

@@ -208,7 +208,7 @@ public class BlueRight extends AbstractAutonomusDrive {
             telemetry.addLine("INSIDE ELSE IF RIGHT");
 
             trajSeq = drivetrain.trajectorySequenceBuilder(STARTING_POSITION)
-                    .strafeRight(28)
+                    .strafeRight(20)
                     .forward(20)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
                     .waitSeconds(1)
