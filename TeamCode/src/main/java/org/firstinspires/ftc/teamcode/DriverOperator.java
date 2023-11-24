@@ -11,39 +11,39 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 @TeleOp
 public class DriverOperator extends OpMode {
 
-    // Declare our motors
-    // Make sure your ID's match your configuration
+    // Declare DC motors
     DcMotor frontLeft = null;
     DcMotor frontRight = null;
     DcMotor backLeft = null;
     DcMotor backRight = null;
-    DcMotor Elevator = null;
-    DcMotor Slider = null;
+    DcMotor elevator = null;
+    DcMotor slider = null;
 
-    Servo Drone = null;
+    // Declare Servo motors
+    Servo drone = null;
+    Servo elbow = null;
+    Servo grabber = null;
+    Servo elevatorLock = null;
+    Servo purpleDrop = null;
+    Servo yellowDrop = null;
 
-    Servo Elbow = null;
-    Servo Grabber = null;
-    Servo ElevatorLock = null;
-    Servo PurpleDrop = null;
-    Servo YellowDrop = null;
+    double dronePos = 0;
+    double elbowPos = 0.8 ;
+    double grabberPos = 0.5;
+    double elevatorLockPos = 0.5;
+    double purpleDropPos = 0.9;
+    double yellowDropPos = 0;
 
-    double DronePos = 0;
-    double ElbowPos = 0.8 ;
-    double GrabberPos = 0.5;
-    double ElevatorLockPos = 0.5;
-    double PurpleDropPos = 0.9;
-   double YellowDropPos = 0;
-
-
-    double SliderSpeed = 0;
-    double ElevatorPower = 0;
+    double sliderSpeed = 0;
+    double elevatorPower = 0;
     //double ElevatorLockPower = 0.5;
-    double Drivepower = 3;
-
+    double drivePower = 3;
 
     @Override
     public void init() {
+
+        // Make sure your ID's match your configuration
+
         frontLeft = hardwareMap.dcMotor.get("frontLeft");
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -60,12 +60,12 @@ public class DriverOperator extends OpMode {
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        Drone = hardwareMap.get(Servo.class, "drone");
-        Drone.scaleRange(0, 1);
+        drone = hardwareMap.get(Servo.class, "drone");
+        drone.scaleRange(0, 1);
 
-        Elbow = hardwareMap.get(Servo.class, "elbow");
-        Elbow.scaleRange(0, 1);
-        Elbow.setPosition(ElbowPos);
+        elbow = hardwareMap.get(Servo.class, "elbow");
+        elbow.scaleRange(0, 1);
+        elbow.setPosition(elbowPos);
 
 
        /* YellowDrop = hardwareMap.get(Servo.class, "yellowdrop");
@@ -73,29 +73,28 @@ public class DriverOperator extends OpMode {
         YellowDrop.setPosition(YellowDropPos);
         telemetry.addLine("intial YellowDrop  position: " +YellowDrop.getPosition());*/
 
-        Grabber = hardwareMap.get(Servo.class, "grabber");
-        Grabber.scaleRange(0, 1);
-        telemetry.addLine("grabber current position: " +Grabber.getPosition());
-        Grabber.setPosition(GrabberPos);
+        grabber = hardwareMap.get(Servo.class, "grabber");
+        grabber.scaleRange(0, 1);
+        telemetry.addLine("grabber current position: " +grabber.getPosition());
+        grabber.setPosition(grabberPos);
 
+        slider = hardwareMap.dcMotor.get("slider");
+        slider.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slider.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        Slider = hardwareMap.dcMotor.get("slider");
-        Slider.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        Slider.setDirection(DcMotorSimple.Direction.REVERSE);
+        elevator = hardwareMap.dcMotor.get("elevator");
+        elevator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        elevator.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        Elevator = hardwareMap.dcMotor.get("elevator");
-        Elevator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        Elevator.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        ElevatorLock = hardwareMap.get(Servo.class, "elevatorlock");
-        ElevatorLock.scaleRange(0, 1);
-        ElevatorLock.setPosition(ElevatorLockPos);
+        elevatorLock = hardwareMap.get(Servo.class, "elevatorlock");
+        elevatorLock.scaleRange(0, 1);
+        elevatorLock.setPosition(elevatorLockPos);
     }
 
     @Override
     public void loop() {
 
-        Drivepower = 2;
+        drivePower = 2;
         /*if (gamepad1.right_trigger > 0.5){
             Drivepower = 2.5;
             //brake.goHome();
@@ -115,7 +114,7 @@ public class DriverOperator extends OpMode {
         // Denominator is the largest motor power (absolute value) or 1
         // T+his ensures all the powers maintain the same ratio, but only when
         // at least one is out of the range [-1, 1]
-        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), Drivepower);
+        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), drivePower);
         double frontLeftPower = (y + x + rx) / denominator;
         double backLeftPower = (y - x + rx) / denominator;
         double frontRightPower = (y - x - rx) / denominator;
@@ -132,99 +131,97 @@ public class DriverOperator extends OpMode {
 
         //Slider up and down
         telemetry.addLine("sliderspeed before settong slider power: "+ sliderspeed);
-        Slider.setPower(sliderspeed);
+        slider.setPower(sliderspeed);
 
 
         //Elbow up and down
         telemetry.addLine("before Elbow");
 
         if (gamepad2.dpad_up){
-            ElbowPos = 0.55;
-            Elbow.setPosition(ElbowPos);
-            telemetry.addLine("Elbow dpad_up position: " +Elbow.getPosition());
+            elbowPos = 0.55;
+            elbow.setPosition(elbowPos);
+            telemetry.addLine("Elbow dpad_up position: " +elbow.getPosition());
 
         } else  if (gamepad2.dpad_down){
-            ElbowPos = 0.85;
-            Elbow.setPosition(ElbowPos);
-            telemetry.addLine(" Elbow dpad_down position: " +Elbow.getPosition());
+            elbowPos = 0.85;
+            elbow.setPosition(elbowPos);
+            telemetry.addLine(" Elbow dpad_down position: " +elbow.getPosition());
         }
         //grabber in take and open
         telemetry.addLine("before grabber");
         if (gamepad2.right_bumper){
-            GrabberPos = 0.9;
-            Grabber.setPosition(GrabberPos);
-            telemetry.addLine(" Grabber right_bumper position: " +Grabber.getPosition());
+            grabberPos = 0.9;
+            grabber.setPosition(grabberPos);
+            telemetry.addLine(" Grabber right_bumper position: " +grabber.getPosition());
 
         } else if (gamepad2.left_bumper){
 
-            GrabberPos = 0.15;
-            Grabber.setPosition(GrabberPos);
-            telemetry.addLine(" Grabber left_bumper position: " +Grabber.getPosition());
+            grabberPos = 0.15;
+            grabber.setPosition(grabberPos);
+            telemetry.addLine(" Grabber left_bumper position: " +grabber.getPosition());
         }
 
 
         //yellow drop to be commented
        /* telemetry.addLine("before yellow drop");
         if (gamepad2.dpad_left){
-            YellowDropPos = 1;
-            YellowDrop.setPosition(YellowDropPos);
-            telemetry.addLine(" Yellowdrop gamepad2.dpad_left position: " +YellowDrop.getPosition());
+            yellowDropPos = 1;
+            yellowDrop.setPosition(yellowDropPos);
+            telemetry.addLine(" Yellowdrop gamepad2.dpad_left position: " +yellowDrop.getPosition());
         } else if (gamepad2.dpad_right){
-            YellowDropPos = 0;
-            YellowDrop.setPosition(YellowDropPos);
-            telemetry.addLine("Yellowdrop gamepad2.dpad_right position: " +YellowDrop.getPosition());
+            yellowDropPos = 0;
+            yellowDrop.setPosition(YellowDropPos);
+            telemetry.addLine("Yellowdrop gamepad2.dpad_right position: " +yellowDrop.getPosition());
         }*/
 
         //purple intake and drop
        /* telemetry.addLine("before purple drop");
         if (gamepad2.right_bumper){
-            GrabberPos = 0.8;
-            telemetry.addLine("if rb grabber GrabberPos:" + GrabberPos);
-            Grabber.setPosition(GrabberPos);
+            grabberPos = 0.8;
+            telemetry.addLine("if rb grabber GrabberPos:" + grabberPos);
+            grabber.setPosition(grabberPos);
 
         } else if (gamepad2.left_bumper){
-            GrabberPos = 0.2;
-            telemetry.addLine(" else lb grabber GrabberPos:" + GrabberPos);
-            Grabber.setPosition(GrabberPos);
+            grabberPos = 0.2;
+            telemetry.addLine(" else lb grabber GrabberPos:" + grabberPos);
+            grabber.setPosition(grabberPos);
         }*/
 
 
         //launching drone
         if (gamepad1.left_bumper && gamepad1.right_bumper){
-            DronePos = 0;
-            Drone.setPosition(DronePos);
+            dronePos = 0;
+            drone.setPosition(dronePos);
 
         }/* else  if (gamepad1.dpad_right){
-            DronePos = 0;
-            Drone.setPosition(DronePos);
+            dronePos = 0;
+            drone.setPosition(dronePos);
         }*/
 
         //Elevator up and down
-        ElevatorPower = gamepad2.left_stick_y;
-       // ElevatorPower = ElevatorPower;
-        //ElevatorPower = ElevatorPower/2;
-        Elevator.setPower(-ElevatorPower);
+        elevatorPower = gamepad2.left_stick_y;
+        elevator.setPower(-elevatorPower);
 
         //locking elevator
         telemetry.addLine("locking elevator");
         if (gamepad2.left_trigger > 0 && gamepad2.right_trigger > 0){
 
-            ElevatorLockPos = 1;
-            telemetry.addLine("if..gamepad2.dpad_left:"+ ElevatorLockPos);
-            ElevatorLock.setPosition(ElevatorLockPos);
+            elevatorLockPos = 1;
+            telemetry.addLine("if..gamepad2.dpad_left:"+ elevatorLockPos);
+            elevatorLock.setPosition(elevatorLockPos);
 
             boolean in_loop = true;
 
             while(in_loop){
-                Elevator.setPower(-0.5);
+                elevator.setPower(-0.5);
                 in_loop = true;
             }
 
 
         } else if (gamepad2.dpad_right){
-            ElevatorLockPos = 0.7;
-            telemetry.addLine("else..gamepad2.dpad_right:"+ ElevatorLockPos);
-            ElevatorLock.setPosition(ElevatorLockPos);
+            elevatorLockPos = 0.7;
+            telemetry.addLine("else..gamepad2.dpad_right:"+ elevatorLockPos);
+            elevatorLock.setPosition(elevatorLockPos);
         }
 
         telemetry.update();

@@ -54,13 +54,13 @@ public class BlueRight extends AbstractAutonomusDrive {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        Servo PurpleDrop = hardwareMap.get(Servo.class, "purpledrop");
+        Servo purpleDrop = hardwareMap.get(Servo.class, "purpledrop");
 
-        Servo Elbow = hardwareMap.get(Servo.class, "elbow");
-        Elbow.setPosition(0.55);
+        Servo elbow = hardwareMap.get(Servo.class, "elbow");
+        elbow.setPosition(0.55);
 
-        Servo Grabber = hardwareMap.get(Servo.class, "grabber");
-        Grabber.setPosition(0.4);
+        Servo grabber = hardwareMap.get(Servo.class, "grabber");
+        grabber.setPosition(0.4);
 
         /*DcMotor Slider = hardwareMap.dcMotor.get("slider");
         Slider.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -110,9 +110,9 @@ public class BlueRight extends AbstractAutonomusDrive {
             trajSeq = drivetrain.trajectorySequenceBuilder(STARTING_POSITION)
                     .strafeRight(c1StrafeRight)
                     .forward(c2Forward)
-                    .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
+                    .addTemporalMarker(() -> purpleDrop.setPosition(0.01)) // Lower servo
                     .waitSeconds(1)
-                    .addTemporalMarker(() -> PurpleDrop.setPosition(1)) // up servo
+                    .addTemporalMarker(() -> purpleDrop.setPosition(1)) // up servo
                     .back(c3Back)
                     .strafeRight(c4StrafeRight)
                     .forward(c5Forward)
@@ -121,7 +121,7 @@ public class BlueRight extends AbstractAutonomusDrive {
                     .strafeLeft(c7StrafeLeft)
                     .addTemporalMarker(() -> slider.goUp()) // slider up
                     .waitSeconds(2)
-                    .addTemporalMarker(() -> Grabber.setPosition(0.01)) // drop yellow pixel
+                    .addTemporalMarker(() -> grabber.setPosition(0.01)) // drop yellow pixel
                     .back(c8Back)
                     .strafeRight(c9StrafeLeft)
                     .forward(c10Forward)
@@ -135,16 +135,16 @@ public class BlueRight extends AbstractAutonomusDrive {
                     .forward(l1Forward)
                     .turn(Math.toRadians(angle)) //clockwise
                     .forward(l2Forward)
-                    .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
+                    .addTemporalMarker(() -> purpleDrop.setPosition(0.01)) // Lower servo
                     .waitSeconds(1)
-                    .addTemporalMarker(() -> PurpleDrop.setPosition(1)) // up servo
+                    .addTemporalMarker(() -> purpleDrop.setPosition(1)) // up servo
                     .back(l3Back)
                     .strafeRight(l4StrafeRight)
                     .forward(l5Forward)
                     .strafeLeft(l6StrafeLeft)
                     .addTemporalMarker(() -> slider.goUp()) // slider up
                     .waitSeconds(2)
-                    .addTemporalMarker(() -> Grabber.setPosition(0.01)) // drop yellow pixel
+                    .addTemporalMarker(() -> grabber.setPosition(0.01)) // drop yellow pixel
                     .back(l7Back)
                     .strafeRight(l8StrafeRight)
                     .forward(l9Forward)
@@ -157,9 +157,9 @@ public class BlueRight extends AbstractAutonomusDrive {
             trajSeq = drivetrain.trajectorySequenceBuilder(STARTING_POSITION)
                     .strafeRight(r1StrafeRight)
                     .forward(r2Forward)
-                    .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
+                    .addTemporalMarker(() -> purpleDrop.setPosition(0.01)) // Lower servo
                     .waitSeconds(1)
-                    .addTemporalMarker(() -> PurpleDrop.setPosition(1)) // up servo
+                    .addTemporalMarker(() -> purpleDrop.setPosition(1)) // up servo
                     .back(r3Back)
                     .strafeLeft(r4StrafeLeft)
                     .forward(r5Forward)
@@ -168,7 +168,7 @@ public class BlueRight extends AbstractAutonomusDrive {
                     .strafeLeft(r7StrafeLeft)
                     .addTemporalMarker(() -> slider.goUp()) // slider up
                     .waitSeconds(2)
-                    .addTemporalMarker(() -> Grabber.setPosition(0.01)) // drop yellow pixel
+                    .addTemporalMarker(() -> grabber.setPosition(0.01)) // drop yellow pixel
                     .back(r8Back)
                     .strafeRight(r9StrafeRight)
                     .forward(r10Forward)
