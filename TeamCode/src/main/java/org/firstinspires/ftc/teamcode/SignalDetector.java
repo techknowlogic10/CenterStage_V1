@@ -44,9 +44,9 @@ public class SignalDetector {
 
         if(monitorViewNeeded) {
             int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-            this.webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "SpikeMarkPixelWebcam"), cameraMonitorViewId);
+            this.webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         } else {
-            this.webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "SpikeMarkPixelWebcam"));
+            this.webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"));
         }
 
         webcam.setPipeline(new TeamShippingElementDetectorPipeline());

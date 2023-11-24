@@ -64,7 +64,7 @@ public class SpikeMarkPixelDetector {
        // if (USE_WEBCAM) {
        // if (true) {
            // visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "SpikeMarkWebcam"), tfod);
-           builder.setCamera(hardwareMap.get(WebcamName.class, "SpikeMarkPixelWebcam"));
+           builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
             telemetry.addLine("builder. setting Camera");
 
         /*} else {
