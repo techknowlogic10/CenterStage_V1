@@ -66,7 +66,8 @@ public class TestTFOD extends LinearOpMode {
     private VisionPortal visionPortal;
     //private static final String TFOD_MODEL_FILE = "testmodel.tflite";
     //private static final String TFOD_MODEL_FILE = "CenterStage.tflite";
-    private static final String TFOD_MODEL_FILE = "TechKNOWLogic_Centerstage.tflite";
+    //private static final String TFOD_MODEL_FILE = "TechKNOWLogic_Centerstage.tflite";
+    private static final String TFOD_MODEL_FILE = "Centerstage_15004.tflite";
     //private static final String[] LABELS = { "testmodel", };
     private static final String[] LABELS = { "blueprop","redprop" };
     //private static final String[] LABELS = { "Pixel"};

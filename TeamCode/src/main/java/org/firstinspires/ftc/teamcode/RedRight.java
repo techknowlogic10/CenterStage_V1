@@ -16,54 +16,44 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 @Config
 public class RedRight extends AbstractAutonomusDrive {
 
-    //public static Pose2d STARTING_POSITION = new Pose2d(37,-60, Math.toRadians(90));
     public static Pose2d STARTING_POSITION = new Pose2d(0, 0, 0);
-    public static RobotPosition ROBOT_POSITION = RobotPosition.RED_CAROUSAL;
-
-    private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
-
-
-    //private TfodProcessor tfod;
-    //private VisionPortal visionPortal;
-    //private static final String TFOD_MODEL_FILE = "testmodel.tflite";
-    //private static final String TFOD_MODEL_FILE = "CenterStage.tflite";
-    private static final String TFOD_MODEL_FILE = "TechKNOWLogic_Centerstage.tflite";
-    //private static final String[] LABELS = { "testmodel", };
-    private static final String[] LABELS = { "blueprop","redprop"};
-    //private static final String[] LABELS = { "Pixel",};
 
     public static double angle = 95;
 
-    public static double cstraferight = 19;
-    public static double cforward = 26.5;
-    public static double cback = 7;
-    public static double cstrafeleft = 12;
-    public static double c2forward = 30.5;
-    public static double c2back = 5;
-    public static double c2straferight = 63;
-    public static double c3forward = 12;
+    public static double c1StrafeRight = 19;
+    public static double c2Forward = 26.5;
+    public static double c3Back = 7;
+    public static double c4StrafeLeft = 12;
+    public static double c5Forward = 30.5;
+    public static double c6Back = 5;
+    public static double c7StrafeRight = 63;
+    public static double c8Forward = 12;
 
-    public static double lforward = 25;
-    public static double l2forward = 5.5;
-    public static double lback = 8;
-    public static double lstrafeleft = 19;
-    public static double l3forward = 32;
-    public static double l2back = 5;
-    public static double lstraferight = 60;
-    public static double l4forward = 10;
+    public static double l1Forward = 25;
+    public static double l2Forward = 5.5;
+    public static double l3Back = 8;
+    public static double l4StrafeLeft = 19;
+    public static double l5Forward = 32;
+    public static double l6Back = 5;
+    public static double l7StrafeRight = 60;
+    public static double l8Forward = 10;
+
+    public static double r1StrafeRight = 26;
+    public static double r2Forward = 20;
+    public static double r3Back = 7;
+    public static double r4StrafeLeft = 15;
+    public static double r5Forward = 30;
+    public static double r6Back = 5;
+    public static double r7StrafeRight = 29;
+    public static double r8Forward = 10;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        //Servo Grabber = hardwareMap.get(Servo.class, "grabber");
         Servo PurpleDrop = hardwareMap.get(Servo.class, "purpledrop");
-        //PurpleDrop.scaleRange(0.01, 0.4);
-        //PurpleDrop.setPosition(0.4);
-        //Servo YellowDrop = hardwareMap.get(Servo.class, "yellowdrop");
-
 
         Servo Elbow = hardwareMap.get(Servo.class, "elbow");
-       // Elbow.setPosition(0.8);
         Elbow.setPosition(0.55);
 
         Servo Grabber = hardwareMap.get(Servo.class, "grabber");
@@ -73,9 +63,6 @@ public class RedRight extends AbstractAutonomusDrive {
         Slider.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Slider.setDirection(DcMotorSimple.Direction.REVERSE);*/
        Slider slider = new Slider(hardwareMap);
-
-      /*Grabber.scaleRange(0, 1);
-        Grabber.setPosition(0.8); */
 
        /* TeamShippingElementDetector detector = new TeamShippingElementDetector(hardwareMap, telemetry, ROBOT_POSITION, true);
         //Detection continue to happen throughout init
@@ -91,38 +78,18 @@ public class RedRight extends AbstractAutonomusDrive {
         telemetry.addLine("before initTfod");
         initTfod();
         telemetry.addLine("after initTfod");
-        String shippingElementPosition = "NOTFOUND";
+        String teamPropPosition = "NOTFOUND";
 
-       // TeamPropDetector teamPropDetector = new TeamPropDetector(hardwareMap, telemetry);
-      //  String shippingElementPosition = "NOTFOUND";
-
-           // while (opModeInInit() && shippingElementPosition == "NOTFOUND"  ) {
+        // while (opModeInInit() && teamPropPosition == "NOTFOUND"  ) {
         while (opModeInInit()) {
-
-              //  telemetry.addLine("while opModeIsActive");
-
-                //telemetryTfod();
-                shippingElementPosition = startDetection();
-                telemetry.addLine("Position:"+shippingElementPosition);
-
+            teamPropPosition = startDetection();
+                telemetry.addLine("Position:"+teamPropPosition);
                 // Push telemetry to the Driver Station.
                 telemetry.update();
-
-               /* // Save CPU resources; can resume streaming when needed.
-                if (gamepad1.dpad_down) {
-                    visionPortal.stopStreaming();
-                } else if (gamepad1.dpad_up) {
-                    visionPortal.resumeStreaming();
-                }*/
-
                 // Share the CPU.
                 sleep(20);
-            }
-
-
-        telemetry.addLine("BEFORE shippingElementPosition:" +shippingElementPosition);
-        // Save more CPU resources when camera is no longer needed.
-
+        }
+        telemetry.addLine("BEFORE teamPropPosition:" +teamPropPosition);
 
         // Wait for the DS start button to be touched.
         telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
@@ -130,11 +97,8 @@ public class RedRight extends AbstractAutonomusDrive {
         telemetry.update();
         waitForStart();
 
-
         //visionPortal.stopStreaming();
         visionPortal.close();
-
-
 
        /* while (shippingElementPosition.equals("NOTFOUND") && opModeIsActive()) {
 
@@ -143,81 +107,57 @@ public class RedRight extends AbstractAutonomusDrive {
             shippingElementPosition = teamPropDetector.startDetection();
 
         }*/
-            //teamPropDetector.startDetection();
-        /*while (opModeInInit()) {
-            telemetry.addLine("startDetection- teampropposition: " + teamPropDetector.startDetection());
-            telemetry.update();
-        }*/
-
-
-        //String shippingElementPosition = detector.getElementPosition();
-        //telemetry.log().add("team shipping element position " + shippingElementPosition);
-       // String shippingElementPosition = "CENTER";
-        //teamPropDetector.startDetection();
-
 
         SampleMecanumDrive drivetrain = new SampleMecanumDrive(hardwareMap);
-
         TrajectorySequence trajSeq = null;
 
-        if(shippingElementPosition == "CENTER") {
+        if(teamPropPosition == "CENTER") {
 
             telemetry.addLine("INSIDE IF CENTER");
 
             trajSeq = drivetrain.trajectorySequenceBuilder(STARTING_POSITION)
-                    .strafeRight(cstraferight)
-                    .forward(cforward)
+                    .strafeRight(c1StrafeRight)
+                    .forward(c2Forward)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
                     .waitSeconds(1)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(1)) // up servo
-                    .back(cback)
+                    .back(c3Back)
                     .turn(Math.toRadians(-95)) //clockwise
-                    .strafeLeft(cstrafeleft)
-                    .forward(c2forward)
-                    //.waitSeconds(1)
+                    .strafeLeft(c4StrafeLeft)
+                    .forward(c5Forward)
                     .addTemporalMarker(() -> slider.goUp()) // slider up
                     .waitSeconds(2)
                     .addTemporalMarker(() -> Grabber.setPosition(0.01)) // drop yellow pixel
-                    //.addTemporalMarker(() -> YellowDrop.setPosition(1)) // drop yellow pixel
-                    //.waitSeconds(0.5)
-                   // .addTemporalMarker(() -> YellowDrop.setPosition(0.01)) // up servo
-                    .back(c2back)
+                    .back(c6Back)
                     .addTemporalMarker(() -> slider.goToHome()) // slider up
-                    //.waitSeconds(1)
-                    .strafeRight(c2straferight) //75
-                    .forward(c3forward)
+                    .strafeRight(c7StrafeRight) //75
+                    .forward(c8Forward)
                     .build();
 
-        } else if(shippingElementPosition == "LEFT") {
+        } else if(teamPropPosition == "LEFT") {
 
             telemetry.addLine("INSIDE ELSE IF LEFT");
 
-
-
             trajSeq = drivetrain.trajectorySequenceBuilder(STARTING_POSITION)
-                    .forward(lforward)
+                    .forward(l1Forward)
                     .turn(Math.toRadians(angle)) //clockwise
-                    .forward(l2forward)
+                    .forward(l2Forward)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
                     .waitSeconds(1)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(1)) // up servo
-                    .back(lback)
+                    .back(l3Back)
                     .turn(Math.toRadians(-angle)) //clockwise
                     .waitSeconds(0.5)
                     .turn(Math.toRadians(-angle)) //clockwise
-                    .strafeLeft(lstrafeleft)
-                    .forward(l3forward)
+                    .strafeLeft(l4StrafeLeft)
+                    .forward(l5Forward)
                     .addTemporalMarker(() -> slider.goUp()) // slider up
                     .waitSeconds(2)
                     .addTemporalMarker(() -> Grabber.setPosition(0.01)) // drop yellow pixel
-                    //.addTemporalMarker(() -> YellowDrop.setPosition(1)) // drop yellow pixel
-                   // .waitSeconds(0.5)
-                    // .addTemporalMarker(() -> YellowDrop.setPosition(0.01)) // up servo
-                    .back(l2back)
+                    .back(l6Back)
                     .addTemporalMarker(() -> slider.goToHome()) // slider up
-                   // .waitSeconds(1)
-                    .strafeRight(lstraferight)
-                    .forward(l4forward)
+                    .strafeRight(l7StrafeRight)
+                    .forward(l8Forward)
                     .build();
 
 
@@ -225,60 +165,27 @@ public class RedRight extends AbstractAutonomusDrive {
             telemetry.addLine("INSIDE ELSE RIGHT");
 
             trajSeq = drivetrain.trajectorySequenceBuilder(STARTING_POSITION)
-                    .strafeRight(26) // 22
-                    .forward(20) //20
+                    .strafeRight(r1StrafeRight)
+                    .forward(r2Forward)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(0.01)) // Lower servo
                     .waitSeconds(1)
                     .addTemporalMarker(() -> PurpleDrop.setPosition(1)) // up servo
-                    .back(7)
+                    .back(r3Back)
                     .turn(Math.toRadians(-95)) //clockwise
-                    .strafeLeft(15) //20
-                    .forward(30) //26
+                    .strafeLeft(r4StrafeLeft)
+                    .forward(r5Forward)
                     .addTemporalMarker(() -> slider.goUp()) // slider up
                     .waitSeconds(2)
                     .addTemporalMarker(() -> Grabber.setPosition(0.01)) // drop yellow pixel
-                    //.addTemporalMarker(() -> YellowDrop.setPosition(1)) // drop yellow pixel
-                    //.waitSeconds(1)
-                    // .addTemporalMarker(() -> YellowDrop.setPosition(0.01)) // up servo
-                    .back(5)
+                    .back(r6Back)
                     .addTemporalMarker(() -> slider.goToHome()) // slider up
-                    //.waitSeconds(1)
-                    .strafeRight(29)
-                    .forward(10)
+                    .strafeRight(r7StrafeRight)
+                    .forward(r8Forward)
                     .build();
-
         }
 
         drivetrain.followTrajectorySequence(trajSeq);
-
-
-
     }
 
-    /*
-
-    private static final boolean USE_WEBCAM = true;
-
-    //private int spikeMarkPixelPosition = 1;
-
-    public static Pose2d STARTING_POSITION = new Pose2d(37,-60, Math.toRadians(90));
-
-    @Override
-    public void runOpMode() throws InterruptedException {
-
-        Servo Grabber = hardwareMap.get(Servo.class, "grabber");
-        Grabber.scaleRange(0, 1);
-        Grabber.setPosition(0.8);
-
-        TeamShippingElementDetector detector = new TeamShippingElementDetector(hardwareMap, telemetry, ROBOT_POSITION, true);
-        //Detection continue to happen throughout init
-        detector.startDetection();
-
-        while (opModeInInit()) {
-            telemetry.addLine("Parking position is " + detector.getElementPosition());
-            telemetry.update();
-        }
-
-     */
 
 }

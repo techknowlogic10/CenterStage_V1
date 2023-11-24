@@ -12,38 +12,31 @@ import java.util.List;
 
 public abstract class AbstractAutonomusDrive extends LinearOpMode {
 
-
     protected TfodProcessor tfod;
-
-    private static final String TFOD_MODEL_FILE = "TechKNOWLogic_Centerstage.tflite";
-
-    //Centerstage_15004.tflite
-
+    //private static final String TFOD_MODEL_FILE = "TechKNOWLogic_Centerstage.tflite";
+    private static final String TFOD_MODEL_FILE = "Centerstage_15004.tflite";
     private static final String[] LABELS = { "blueprop","redprop"};
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
-
     protected VisionPortal visionPortal;
 
     protected void initTfod() {
 
         // Create the TensorFlow processor by using a builder.
-
         telemetry.addLine("starting initTfod");
-
         tfod = new TfodProcessor.Builder()
 
-                // Use setModelAssetName() if the TF Model is built in as an asset.
-                // Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
-                .setModelAssetName(TFOD_MODEL_FILE) //for default model
-                // .setModelFileName(TFOD_MODEL_FILE)  //for custom mode
-                .setModelLabels(LABELS)
-                //.setIsModelTensorFlow2(true)
-                //.setIsModelQuantized(true)
-                //.setModelInputSize(300)
-                .setModelAspectRatio(16.0 / 8.0)
+        // Use setModelAssetName() if the TF Model is built in as an asset.
+        // Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
+        .setModelAssetName(TFOD_MODEL_FILE) //for default model
+        // .setModelFileName(TFOD_MODEL_FILE)  //for custom mode
+        .setModelLabels(LABELS)
+        //.setIsModelTensorFlow2(true)
+        //.setIsModelQuantized(true)
+        //.setModelInputSize(300)
+        .setModelAspectRatio(16.0 / 8.0)
 
-                .build();
+        .build();
 
         // Create the vision portal by using a builder.
         VisionPortal.Builder builder = new VisionPortal.Builder();
@@ -83,15 +76,12 @@ public abstract class AbstractAutonomusDrive extends LinearOpMode {
         //tfod.setMinResultConfidence(0.75f);
         tfod.setMinResultConfidence(0.65f);
 
-
         // Disable or re-enable the TFOD processor at any time.
         visionPortal.setProcessorEnabled(tfod, true);
 
         telemetry.addLine("end initTfod");
 
     }   // end method initTfod()
-
-
 
     protected String startDetection() {
         String teamPropPosition = "NOTFOUND";
@@ -104,7 +94,6 @@ public abstract class AbstractAutonomusDrive extends LinearOpMode {
 
             telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
-
 
             if(recognition.getLabel() == "redprop" || recognition.getLabel() == "blueprop" ) {
 
@@ -139,6 +128,5 @@ public abstract class AbstractAutonomusDrive extends LinearOpMode {
         telemetry.addLine("after for loop in getTeamPropPosition");
         return teamPropPosition;
     }
-
 
 }
